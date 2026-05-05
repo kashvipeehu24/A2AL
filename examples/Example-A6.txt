@@ -1,0 +1,27 @@
+[
+  [
+    2,
+    "datawarehouse",
+    6,
+    6,
+    6,
+    "DW-inventory-2026-03-02"
+  ],
+  [
+    "I",
+    [0, "DW_Silver",
+      [1, "GP_S_Gen5"],
+      [2, "serverless"],
+      [3, "east-us"]
+    ],
+    [1, "3E_API",
+      [10, "OAuth2"],
+      [11, "1rps"],
+      [12, "prod-only"]
+    ],
+    [5, "Purview",
+      [20, "planned"],
+      [21, "dlp"]
+    ]
+  ]
+]

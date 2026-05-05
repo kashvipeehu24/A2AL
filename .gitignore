@@ -10,9 +10,18 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/
+CLAUDE.md
 
 # Build / scratch
 dist/
 build/
 .cache/
 node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/

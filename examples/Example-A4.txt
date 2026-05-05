@@ -1,0 +1,21 @@
+[
+  [
+    2,
+    "mcp-server",
+    4,
+    0,
+    4,
+    "AI-Social-Intel-2026-03-09",
+    null,
+    null,
+    1
+  ],
+  [
+    "R",
+    [4, "tool-namespace-collision", "RCE", "enforce-unique-namespaces",
+      [[2, "CVE-2026-30856"]]],
+    [3, "ssrf-uri-fetch", "credential-exfiltration", "egress-allowlist",
+      [[0, "https://example.com/analysis"]]],
+    [3, "sampling-abuse", "resource-drain", "restrict-sampling"]
+  ]
+]

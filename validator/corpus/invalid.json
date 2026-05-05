@@ -1,0 +1,98 @@
+{
+  "_comment": "Conformance corpus — negative cases. A conformant validator MUST reject every msg here for the documented reason. The reason is illustrative; exact error wording is implementation-defined.",
+  "cases": [
+    {
+      "name": "null-in-header",
+      "reason": "null forbidden everywhere (grammar §1.2)",
+      "msg": [[2, "ctx", 0, 2, 1, null], ["Δ", [1, 0, "ID-1"]]]
+    },
+    {
+      "name": "float-in-body",
+      "reason": "float forbidden everywhere",
+      "msg": [[2, "ctx", 0, 2, 3], ["S", [1, 99.5]]]
+    },
+    {
+      "name": "object-in-body",
+      "reason": "objects/maps forbidden — use KV-list",
+      "msg": [[2, "ctx", 0, 2, 6], ["I", [0, "db", {"region": "east-us"}]]]
+    },
+    {
+      "name": "wrong-version",
+      "reason": "v MUST equal 2",
+      "msg": [[1, "ctx", 0, 2, 1], ["Δ", [1, 0, "ID-1"]]]
+    },
+    {
+      "name": "header-too-short",
+      "reason": "header length < 5 — required fields missing",
+      "msg": [[2, "ctx", 0, 2], ["Δ", [1, 0, "ID-1"]]]
+    },
+    {
+      "name": "ctx-invalid-uppercase",
+      "reason": "ctx_id regex does not allow uppercase",
+      "msg": [[2, "BadCTX", 0, 2, 1], ["Δ", [1, 0, "ID-1"]]]
+    },
+    {
+      "name": "lane-tag-mismatch",
+      "reason": "typ=1 requires lane 'Δ', not 'D'",
+      "msg": [[2, "ctx", 0, 2, 1], ["D", [1, "approved"]]]
+    },
+    {
+      "name": "A1-unsorted",
+      "reason": "ΔITEMs must be sorted ascending by (op, etype, id)",
+      "msg": [
+        [2, "ctx", 0, 2, 1],
+        ["Δ", [3, 0, "US-1"], [1, 0, "US-2"]]
+      ]
+    },
+    {
+      "name": "A2-unsorted-dkeys",
+      "reason": "DPAIRs must be sorted by dkey ascending",
+      "msg": [
+        [2, "ctx", 1, 0, 2],
+        ["D", [3, ["US-1"]], [1, "approved"]]
+      ]
+    },
+    {
+      "name": "A3-unsorted-mkeys",
+      "reason": "METs must be sorted by mkey ascending",
+      "msg": [
+        [2, "ctx", 0, 7, 3],
+        ["S", [2, 0], [1, 100]]
+      ]
+    },
+    {
+      "name": "A4-sev-desc-violated",
+      "reason": "RISKs must be sorted by sev DESCENDING",
+      "msg": [
+        [2, "ctx", 4, 0, 4],
+        ["R", [2, "low-sev-vec", "x", "y"], [4, "crit-vec", "x", "y"]]
+      ]
+    },
+    {
+      "name": "A5-gates-unsorted",
+      "reason": "GATEs must be sorted by (scope, invariant) ascending",
+      "msg": [
+        [2, "ctx", 1, 3, 5],
+        ["G", ["US-858", "z"], ["CI", "a"]]
+      ]
+    },
+    {
+      "name": "A6-kvs-unsorted",
+      "reason": "KV pairs within an inventory item must be sorted by k ascending",
+      "msg": [
+        [2, "ctx", 6, 6, 6],
+        ["I", [0, "db", [3, "east-us"], [1, "Gen5"]]]
+      ]
+    },
+    {
+      "name": "boolean-value",
+      "reason": "bools are not in the allowed atom types (int, str, arr)",
+      "msg": [[2, "ctx", 0, 2, 2], ["D", [1, true]]]
+    },
+    {
+      "name": "wrong-top-shape",
+      "reason": "MSG must be exactly [H, B] — not three elements",
+      "msg": [[2, "ctx", 0, 2, 1], ["Δ", [1, 0, "ID-1"]], "extra"]
+    }
+  ]
+}
