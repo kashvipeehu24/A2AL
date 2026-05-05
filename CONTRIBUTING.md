@@ -37,8 +37,8 @@ Material edits (anything other than typos or wording) should:
 
 A2AL follows semantic versioning:
 
-- **MAJOR** — incompatible grammar changes, archetype additions/removals, header shape changes
-- **MINOR** — new code-registry entries (`1000+`), new optional fields appended at the end, new examples
+- **MAJOR** — incompatible grammar changes, envelope shape changes, type-ban changes
+- **MINOR** — new profile sections, new optional envelope fields appended at the end, new examples
 - **PATCH** — clarifications, validator fixes, documentation
 
 ## Conduct

@@ -1,6 +1,6 @@
 # A2AL Examples
 
-Worked examples for A2AL/0.3.0, organized by profile. Every JSON file in this directory is canonical (or will be once `validator/python/` finishes hardening).
+Worked examples for A2AL/0.3.0, organized by profile. All JSON examples in this directory pass `validator/python/validate.py` against `specs/A2A-Core.md` and the relevant profile rules.
 
 ## Per-Profile Examples
 

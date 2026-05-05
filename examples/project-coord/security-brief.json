@@ -11,12 +11,12 @@
   "risk": [
     ["crit", "zero-click-rce", "claude-dxt-rce-via-prompt-injection", "treat-tool-responses-as-injection-vector", [["cve", "claude-dxt-rce-cvss-10.0"]]],
     ["high", "command-injection", "mcp-stdio-config-rce", "verify-no-stdio-transport", [["cve", "CVE-2026-30861"]]],
+    ["high", "cross-tenant-data-exposure", "leaked-keys-configs", "infrastructure-level-tenant-isolation", [["cve", "CVE-2026-30859"]]],
     ["high", "sql-injection", "ai-database-query-tool-rce", "recursive-input-validation", [["cve", "CVE-2026-30860"]]],
     ["high", "tool-namespace-collision", "tool-redirect", "enforce-unique-namespaces", [["cve", "CVE-2026-30856"]]],
-    ["high", "cross-tenant-data-exposure", "leaked-keys-configs", "infrastructure-level-tenant-isolation", [["cve", "CVE-2026-30859"]]],
-    ["med", "ssrf-via-tool-params", "internal-network-probe", "egress-allowlist", [["doc", "CoSAI-taxonomy"]]],
+    ["med", "exposed-public-mcp", "credential-leak-via-default-bind", "bind-localhost-strip-debug", [["doc", "8000-mcp-servers-research"]]],
     ["med", "sampling-abuse", "resource-drain-or-hijack", "treat-sampling-as-privileged", [["doc", "Unit42-MCP-sampling"]]],
-    ["med", "exposed-public-mcp", "credential-leak-via-default-bind", "bind-localhost-strip-debug", [["doc", "8000-mcp-servers-research"]]]
+    ["med", "ssrf-via-tool-params", "internal-network-probe", "egress-allowlist", [["doc", "CoSAI-taxonomy"]]]
   ],
   "actions": [
     ["MCP-Server-PM", "add-epic", "security controls — first-class concern"],

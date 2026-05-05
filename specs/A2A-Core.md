@@ -233,7 +233,7 @@ Google's [Agent2Agent (A2A) protocol](https://github.com/google/A2A) is the **tr
 - Wire transport over HTTP + JSON-RPC 2.0, with SSE for streaming
 - `Message`, `Artifact`, and `Part` data structures
 
-The two layer cleanly:
+The two layers compose cleanly:
 
 - A Google A2A `Message` carries one or more `Part` blocks. A `Part` of type `data` can hold a single A2AL/0.3.0 message as its payload.
 - A Google A2A `Artifact` (an immutable task result) can likewise carry an A2AL message as its data payload.

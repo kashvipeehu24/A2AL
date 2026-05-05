@@ -2,7 +2,7 @@
 
 **Status:** Reference profile.
 **Domain:** Project, PMO, sprint, and inter-project coordination.
-**Replaces:** The seven archetypes in A2AL/2.0 (now composable as sections).
+**Replaces:** A2AL/2.0 (array-only positional format; no working implementations; superseded).
 
 ## Reference
 

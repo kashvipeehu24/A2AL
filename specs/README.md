@@ -1,26 +1,27 @@
 # A2AL Specification
 
-Normative documents defining A2AL/2.0.
+Normative documents defining A2AL/0.3.0.
 
 | File | Status | Description |
 |---|---|---|
-| [A2A-Grammar.md](./A2A-Grammar.md) | Normative | Wire format, archetypes, canonicalization, forward-compat |
-| [A2A-Rulebook.md](./A2A-Rulebook.md) | Normative | Reader and Writer agent obligations |
+| [A2A-Core.md](./A2A-Core.md) | Normative | Envelope, sections, type bans, canonicalization, validation |
+| [A2A-Rulebook.md](./A2A-Rulebook.md) | Normative | Reader, writer, and relay agent obligations |
+| [IMPLEMENTING.md](./IMPLEMENTING.md) | Implementer guide | Writer / reader algorithms and validation pipeline |
 
-The grammar is the source of truth for any structural question. The rulebook governs agent behavior on top of the grammar.
+The core defines the wire format and contract; profiles in [`../profiles/`](../profiles) define domain vocabulary and ordering rules.
 
 ## Conformance
 
-An implementation is **A2AL/2.0 conformant** if and only if it:
+An implementation is **A2AL/0.3.0 conformant** if it:
 
-1. Emits messages whose canonical bytes match `A2A-Grammar.md` §7 for every input.
-2. Validates incoming messages per `A2A-Grammar.md` §1–§6, **rejecting** (not repairing) malformed input.
-3. Preserves unknown role codes, archetype-extension codes, and trailing positional fields verbatim when relaying (§8).
-4. Never emits prose between agents except where explicitly permitted by §9.1.
-5. Never emits secret values; inventory carries metadata only (§9.2).
+1. Validates every positive case in `validator/corpus/core/valid.json`
+2. Rejects every negative case in `validator/corpus/core/invalid.json`
+3. For every profile it claims to support: passes that profile's `valid.json` and rejects its `invalid.json`
+4. Preserves unknown intents, profiles, sections, and envelope fields verbatim when relaying (forward-compat per `A2A-Core.md` §7)
+5. Rejects malformed messages — never repairs
 
-A future `validator/` module will provide automated conformance checks against a golden test corpus.
+The corpus is the binding behavioral definition; the prose specification is its rationale.
 
 ## Stability
 
-A2AL/2.0 is frozen. Adding new archetypes is a major-version change; new codes within existing registries (etype, mkey, vec, verb, etc.) MUST use the reserved `1000+` extension space and MUST NOT renumber existing codes.
+A2AL/0.3.0 is pre-1.0. Breaking changes are expected before /1.0 is reached. Profiles version independently from the core (e.g. `project-coord/1.0`).
