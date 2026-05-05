@@ -152,11 +152,11 @@ def validate(msg) -> None:
 
 
 def _main() -> int:
-    raw = open(sys.argv[1]).read() if len(sys.argv) > 1 else sys.stdin.read()
     try:
+        raw = open(sys.argv[1], encoding="utf-8").read() if len(sys.argv) > 1 else sys.stdin.read()
         msg = json.loads(raw)
         validate(msg)
-    except (json.JSONDecodeError, A2ALError) as e:
+    except (OSError, json.JSONDecodeError, A2ALError) as e:
         print(f"INVALID: {e}", file=sys.stderr)
         return 1
     print("VALID")
