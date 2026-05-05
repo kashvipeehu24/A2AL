@@ -108,8 +108,8 @@
         "intent": "inventory-update",
         "profile": "project-coord/1.0",
         "inventory": [
-          ["db", "DW_Silver", [["region", "east-us"], ["sku", "Gen5"], ["tier", "serverless"]]],
           ["api", "3E_API", [["auth", "OAuth2"], ["env", "prod"], ["rate", "1rps"]]],
+          ["db", "DW_Silver", [["region", "east-us"], ["sku", "Gen5"], ["tier", "serverless"]]],
           ["service", "Purview", [["mode", "planned"]]]
         ]
       }
