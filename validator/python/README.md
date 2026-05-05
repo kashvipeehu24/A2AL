@@ -1,15 +1,15 @@
 # A2AL Reference Validator (Python)
 
-Reference implementation tracking `specs/A2A-Grammar.md`. **Status: WIP.**
+Reference implementation tracking `specs/A2A-Core.md` and the per-profile rules in `profiles/*.md`.
 
 ## Requirements
 
-Python 3.9+ (standard library only — no external dependencies).
+Python 3.9+. Standard library only — no external dependencies.
 
-## Run a single message
+## Validate a single message
 
 ```bash
-echo '[[2,"ctx",0,2,1],["Δ",[1,0,"ID-1"]]]' | python validate.py
+echo '{"v":"0.3.0","from":["a","x"],"to":["b","y"],"id":"m","intent":"p","profile":"x/1.0"}' | python validate.py
 # VALID
 
 python validate.py path/to/msg.json
@@ -17,29 +17,30 @@ python validate.py path/to/msg.json
 
 Exits 0 if valid, 1 with a reason on stderr if invalid.
 
-## Run the conformance corpus
+## Run the conformance corpora
 
 ```bash
 python test_corpus.py
 ```
 
-The corpus lives at `../corpus/valid.json` and `../corpus/invalid.json`. Every positive case must be accepted; every negative case must be rejected (the documented reason is illustrative — exact error wording is implementation-defined).
+Walks every corpus under `../corpus/` and runs:
+- Core cases against `validate_core`
+- Profile cases against `validate` (core + profile-aware)
 
-## What this validator checks
+## Modes
 
-- Type bans (no null / bool / float / object) anywhere in the tree
-- Top-level shape `[H, B]`
-- Header positional types and `v == 2`
-- Body lane tag matches `typ`
-- Per-archetype item shape (A1–A7)
-- Canonical ordering per `specs/A2A-Grammar.md` §7.2
-- Forward-compat: unknown `typ` values are accepted (preserved by relays)
+The validator has two modes:
 
-## What it does not yet check
+| Mode | Function | Checks |
+|---|---|---|
+| Core | `validate_core(msg)` | Envelope shape, type bans, required fields |
+| Profile-aware | `validate(msg)` | Core + per-profile rules when profile is recognized |
 
-- `mid` / `cid` regex shape
-- `ctx` NFC normalization
-- Whitespace canonicalization (operates on already-parsed JSON)
-- Whether trailing positional fields exceed defined positions
+Unknown profiles are accepted (forward-compat per spec Section 8).
 
-These will be added as the validator matures.
+## Known profiles
+
+| Profile | Handler |
+|---|---|
+| `project-coord/1.0` | canonical ordering for delta/status/decision/risk/gates/inventory; emission order for actions/refs |
+| `social-post/1.0` | required fields per intent (post: title/submolt/body; comment/reply/edit/delete: in-reply-to) |
