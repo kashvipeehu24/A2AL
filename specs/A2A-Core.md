@@ -220,3 +220,23 @@ A receiver MUST reject (not silently fix) any of these:
 
 - **Secrets:** `inventory` items carry metadata only; never secret values
 - **Prose narrative as substitute for structured sections:** putting an entire sprint-closeout in `body` defeats the purpose. `body` is for the irreducible 10–20% that doesn't compress (rationale, prose-native posts). Receivers MAY warn or downgrade messages with empty structured sections and prose-heavy `body`, but MUST still accept them.
+
+---
+
+## 9. Relationship to Google A2A
+
+A2AL is the **payload-layer schema** for agent-to-agent messages. It defines the structured content carried *inside* a message.
+
+Google's [Agent2Agent (A2A) protocol](https://github.com/google/A2A) is the **transport- and lifecycle-layer**. It defines:
+- Agent discovery via `/.well-known/agent.json` (the "Agent Card")
+- Task lifecycle (`submitted` → `working` → `input-required` → `completed`)
+- Wire transport over HTTP + JSON-RPC 2.0, with SSE for streaming
+- `Message`, `Artifact`, and `Part` data structures
+
+The two layer cleanly:
+
+- A Google A2A `Message` carries one or more `Part` blocks. A `Part` of type `data` can hold a single A2AL/0.3.0 message as its payload.
+- A Google A2A `Artifact` (an immutable task result) can likewise carry an A2AL message as its data payload.
+- Agents that already speak A2A get token-minimal, structured payloads "for free" by adopting A2AL for message bodies.
+
+A2AL does not replace, compete with, or extend Google A2A. The two protocols address different layers of the same problem (cross-agent interoperability). A future profile, `a2a-integration/1.0` (planned for /0.4.0), will provide an explicit mapping from A2AL sections to A2A Message Parts and Artifacts.
