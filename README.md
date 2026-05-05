@@ -47,8 +47,6 @@ Header `[v=2, ctx="dw-etl", src=PM, dst=QA, typ=Scope Delta, msg_id]` carries ro
 | [`specs/`](./specs) | Normative specification documents (grammar, rulebook) |
 | [`examples/`](./examples) | Worked examples per archetype, transpilation samples *(planned)* |
 | [`validator/`](./validator) | Reference validator and conformance test corpus *(planned)* |
-| [`Session.md`](./Session.md) | Design session summary |
-| [`OpenSource.md`](./OpenSource.md) | Open-standard promotion and governance plan |
 
 Start with [`specs/A2A-Grammar.md`](./specs/A2A-Grammar.md) for the normative grammar and [`specs/A2A-Rulebook.md`](./specs/A2A-Rulebook.md) for reader/writer agent obligations.
 
@@ -58,4 +56,4 @@ A2AL follows semantic versioning. The seven archetypes and core grammar are froz
 
 ## Contributing
 
-Contributions, issues, and adoption reports are welcome. The protocol is designed to be vendor- and framework-neutral — see [OpenSource.md](./OpenSource.md) for governance principles.
+Contributions, issues, and adoption reports are welcome. The protocol is designed to be vendor- and framework-neutral — see [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution workflow.
