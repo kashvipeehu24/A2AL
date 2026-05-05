@@ -5,17 +5,17 @@ Thanks for your interest in A2AL. The protocol is intended to be **stable, vendo
 ## What we're looking for
 
 - **Implementation reports** — "I built an A2AL writer/reader in $LANGUAGE; here's what was unclear" is gold. Open an issue.
-- **Conformance corpus additions** — new positive or negative cases under `validator/corpus/`. Especially edge cases the prose spec doesn't cover well.
+- **Conformance corpus additions** — new positive or negative cases under `validator/corpus/core/` or `validator/corpus/profiles/<profile>/`. Especially edge cases the prose spec doesn't cover well.
 - **Validator ports** — TypeScript, Go, Rust, etc. Each port must pass the existing corpus untouched.
+- **New profiles** — domain profiles for use cases the reference profiles don't cover (research-handoff, code-review, retrieval-result, etc.). Add to `profiles/<name>-<version>.md`, register in `profiles/PROFILES.md`, ship a corpus.
 - **Spec clarifications** — places where two readers could disagree on what's correct. PRs should add a corpus case alongside the prose change.
-- **Worked examples** — additional `examples/` material, especially Markdown→A2AL transpilations from real workflows.
+- **Worked examples** — additional `examples/<profile>/` material drawn from real workflows.
 
 ## What to avoid
 
-- **Adding archetypes.** The seven archetypes are frozen at A2AL/2.0. New archetypes are a major-version event and require explicit governance review.
-- **Renumbering existing codes.** Vendor extensions go to the reserved `1000+` space.
-- **Repair-on-receive logic.** The rulebook forbids it — please do not propose validators that "fix" malformed input.
-- **Transport coupling.** A2AL is transport-agnostic; specifying HTTP/WS/MQTT framings is out of scope for this repo.
+- **Adding required core envelope fields.** Profiles can require their own; the core minimum stays at v/from/to/id/intent/profile.
+- **Repair-on-receive logic.** The rulebook forbids it.
+- **Transport coupling.** A2AL is transport-agnostic; HTTP/WS/MQTT framings belong elsewhere.
 
 ## Development workflow
 
@@ -25,11 +25,11 @@ Thanks for your interest in A2AL. The protocol is intended to be **stable, vendo
 4. Run `python validator/python/test_corpus.py` and ensure it passes.
 5. Open a PR. Describe **what changes** and **why** — link to the relevant spec section.
 
-## Spec changes
+## Spec or profile changes
 
-Material spec edits (anything other than typos or wording) should:
+Material edits (anything other than typos or wording) should:
 
-- Cite the exact grammar section being clarified
+- Cite the exact section being clarified (`specs/A2A-Core.md` §X or `profiles/<profile>.md`)
 - Add at least one positive and one negative corpus case demonstrating the new precision
 - Note backward-compatibility impact
 
