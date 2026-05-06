@@ -6,8 +6,23 @@ Reference skill and slash command for Claude Code that let an agent read, write,
 
 | Path | Purpose |
 |---|---|
-| [`skills/a2al/SKILL.md`](./skills/a2al/SKILL.md) | Skill definition — invoke when reading or writing A2AL messages |
-| [`commands/a2al.md`](./commands/a2al.md) | Slash command `/a2al` — explicit invocation by the user |
+| [`skills/a2al/SKILL.md`](./skills/a2al/SKILL.md) | A2AL/0.3.0 skill — invoke for **structured payloads** (sprint closeouts, decision logs, risk briefs, ≥5 structured items) |
+| [`skills/a2a-shorthand/SKILL.md`](./skills/a2a-shorthand/SKILL.md) | A2A Shorthand skill — invoke for **short conversational messages** (handshakes, acks, ≤3-item updates) |
+| [`commands/a2al.md`](./commands/a2al.md) | Slash command `/a2al` — explicit user invocation of the A2AL skill |
+
+## Choosing between the two skills
+
+The two skills are complementary, not competing:
+
+| Message shape | Skill |
+|---|---|
+| Handshake / ack / single-fact update | `a2a-shorthand` |
+| Status update with ≤3 metrics | `a2a-shorthand` |
+| Sprint closeout / decision log / risk brief | `a2al` |
+| Multi-section structured payload (≥5 deltas) | `a2al` |
+| Anything with structured citations (refs) | `a2al` |
+
+The `a2a-shorthand` skill self-routes back to `a2al` when its threshold is exceeded; `a2al` self-routes to `a2a-shorthand` when the message is conversational. Either skill is a valid entry point.
 
 ## Installing
 
@@ -16,6 +31,7 @@ Reference skill and slash command for Claude Code that let an agent read, write,
 ```bash
 mkdir -p .claude/skills .claude/commands
 cp -r examples/ClaudeCode/skills/a2al .claude/skills/
+cp -r examples/ClaudeCode/skills/a2a-shorthand .claude/skills/
 cp examples/ClaudeCode/commands/a2al.md .claude/commands/
 ```
 
@@ -24,10 +40,11 @@ cp examples/ClaudeCode/commands/a2al.md .claude/commands/
 ```bash
 mkdir -p ~/.claude/skills ~/.claude/commands
 cp -r examples/ClaudeCode/skills/a2al ~/.claude/skills/
+cp -r examples/ClaudeCode/skills/a2a-shorthand ~/.claude/skills/
 cp examples/ClaudeCode/commands/a2al.md ~/.claude/commands/
 ```
 
-After installing, restart Claude Code. The agent will surface the `a2al` skill when relevant; you can also explicitly invoke it via `/a2al`.
+After installing, restart Claude Code. The agent will surface both skills when relevant; you can also explicitly invoke the A2AL skill via `/a2al`.
 
 ## What it does
 
