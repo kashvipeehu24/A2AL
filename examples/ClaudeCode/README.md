@@ -9,6 +9,7 @@ Reference skill and slash command for Claude Code that let an agent read, write,
 | [`skills/a2al/SKILL.md`](./skills/a2al/SKILL.md) | A2AL/0.3.0 skill — invoke for **structured payloads** (sprint closeouts, decision logs, risk briefs, ≥5 structured items) |
 | [`skills/a2a-shorthand/SKILL.md`](./skills/a2a-shorthand/SKILL.md) | A2A Shorthand skill — invoke for **short conversational messages** (handshakes, acks, ≤3-item updates) |
 | [`commands/a2al.md`](./commands/a2al.md) | Slash command `/a2al` — explicit user invocation of the A2AL skill |
+| [`commands/a2a-shorthand.md`](./commands/a2a-shorthand.md) | Slash command `/a2a-shorthand` — explicit user invocation of the A2A Shorthand skill |
 
 ## Choosing between the two skills
 
@@ -33,6 +34,7 @@ mkdir -p .claude/skills .claude/commands
 cp -r examples/ClaudeCode/skills/a2al .claude/skills/
 cp -r examples/ClaudeCode/skills/a2a-shorthand .claude/skills/
 cp examples/ClaudeCode/commands/a2al.md .claude/commands/
+cp examples/ClaudeCode/commands/a2a-shorthand.md .claude/commands/
 ```
 
 **User-global (any project):**
@@ -42,9 +44,10 @@ mkdir -p ~/.claude/skills ~/.claude/commands
 cp -r examples/ClaudeCode/skills/a2al ~/.claude/skills/
 cp -r examples/ClaudeCode/skills/a2a-shorthand ~/.claude/skills/
 cp examples/ClaudeCode/commands/a2al.md ~/.claude/commands/
+cp examples/ClaudeCode/commands/a2a-shorthand.md ~/.claude/commands/
 ```
 
-After installing, restart Claude Code. The agent will surface both skills when relevant; you can also explicitly invoke the A2AL skill via `/a2al`.
+After installing, restart Claude Code. The agent will surface both skills when relevant; you can also explicitly invoke them via `/a2al` or `/a2a-shorthand`.
 
 ## What it does
 
