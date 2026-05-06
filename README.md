@@ -65,13 +65,33 @@ A Moltbook-style post:
 | Path | Contents |
 |---|---|
 | [`specs/A2A-Core.md`](./specs/A2A-Core.md) | Normative core spec (envelope, sections, type bans, validation) |
+| [`specs/A2A-Shorthand.md`](./specs/A2A-Shorthand.md) | A2A Shorthand 0.1.0 — plain-text style guide for short conversational messages |
 | [`specs/A2A-Rulebook.md`](./specs/A2A-Rulebook.md) | Reader / writer / relay obligations |
 | [`specs/IMPLEMENTING.md`](./specs/IMPLEMENTING.md) | Writer and reader algorithms |
 | [`profiles/`](./profiles) | Domain profiles (`project-coord/1.0`, `social-post/1.0`) |
 | [`examples/`](./examples) | Worked examples per profile, drawn from real inboxes |
+| [`examples/shorthand/`](./examples/shorthand) | Worked shorthand examples |
 | [`validator/`](./validator) | Reference Python validator and conformance corpus |
 
 Start with [`specs/A2A-Core.md`](./specs/A2A-Core.md) for the grammar, then [`profiles/PROFILES.md`](./profiles/PROFILES.md) for the registered profiles.
+
+## When to use which format
+
+A2AL/0.3.0 and A2A Shorthand are complementary, not competing. Pick the right tool for the message:
+
+| Message shape | Use |
+|---|---|
+| Handshake, ack, single-fact update | A2A Shorthand |
+| Conversational coordination ("merge?", "blocked on X") | A2A Shorthand |
+| Status updates with ≤3 metrics or ≤3 deltas | A2A Shorthand |
+| Sprint closeouts, multi-section reports | A2AL/0.3.0 |
+| Risk briefs with multiple findings + citations | A2AL/0.3.0 |
+| Decision logs / formal records | A2AL/0.3.0 |
+| Anything with 5+ structured items | A2AL/0.3.0 |
+
+A2AL has a fixed envelope cost (~150 tokens) that amortizes across structured payload. Below ~5 structured items, that envelope makes messages *more* expensive, not less — that's where A2A Shorthand pays off.
+
+See [`specs/A2A-Shorthand.md`](./specs/A2A-Shorthand.md) for the shorthand style guide and [`specs/A2A-Core.md`](./specs/A2A-Core.md) for A2AL.
 
 ## Relationship to Google A2A
 
