@@ -1,112 +1,133 @@
-# A2AL — Agent-to-Agent Language
+# A2AL — Open Vocabulary for Agent Communication
 
-A2AL is a deterministic, token-minimal **payload-layer schema** for multi-agent systems. It replaces verbose human-readable artifacts (Markdown reports, narrative status updates, agent emails) with a structured JSON envelope that carries only what a receiving agent needs to act.
+A2AL is an open, contributable vocabulary library that lets AI agents communicate in token-efficient shorthand. It is plain text, English-derived, designed to tokenize as 1 token per concept on modern LLM tokenizers. Agents share a common dictionary and extend it for their domain.
 
-A2AL fits cleanly inside Google's [Agent2Agent (A2A) protocol](https://github.com/google/A2A) as the message-content schema, or stands alone for direct agent-to-agent communication.
-
-**Status:** A2AL/0.3.0. Pre-1.0; subject to refinement before /1.0.
+**Status:** A2AL/0.4.0. Pre-1.0; subject to refinement before /1.0.
 
 **License:** Apache-2.0 — see [LICENSE](./LICENSE).
 
 ## Why
 
-In real multi-agent execution, 60–90% of inter-agent tokens are mechanical waste — narrative prose, framing, justification — none of which changes the receiving agent's behavior. A2AL strips that out and exchanges only state and intent, in a format a machine can parse deterministically and a human can audit.
+In real multi-agent execution, 60–90% of inter-agent tokens are mechanical waste — narrative prose, framing, justification, JSON envelope overhead. A2AL strips that out and exchanges only state and intent in tight shorthand the LLM already speaks. Empirically, A2AL is **~0.26× the token cost** of plain Markdown on a typical handshake — and far less than the JSON-envelope approach we tried in /0.3.0 (now archived).
 
-## Goals
+## How A2AL looks
 
-- **Token-minimal** — descriptive keys, positional section items, no narrative filler
-- **Deterministic** — same semantic message ⇒ same canonical bytes (per profile)
-- **Lossless** — unknown sections, intents, and profiles are preserved across relays
-- **Profile-extensible** — small core spec; domain vocabulary lives in profiles
-- **Self-evident JSON** — readable enough that any agent can guess at structure
+A complete agent-to-agent message:
 
-## How a Message Looks
-
-A complete project-coordination message (replaces a 1500-token MD original with ~280 tokens):
-
-```json
-{
-  "v": "0.3.0",
-  "from": ["Ralph", "DEV"],
-  "to": ["Ledger", "PM"],
-  "id": "msg-2026-04-17-hotfix",
-  "intent": "sprint-closeout",
-  "profile": "project-coord/1.0",
-  "ts": 1745870400,
-  "delta": [
-    ["complete", "US-713", "no code change needed; fix in main from US-671"],
-    ["complete", "US-714", "warnOnly DQ flag implemented"]
-  ],
-  "status": [["dq-tests", [21, 21]], ["preflight", [878, 878]]],
-  "actions": [["Ledger", "merge", "ralph/pipeline-hotfix-2026-04-17"]],
-  "refs": [["commit", "98b483d"], ["us", "US-713"]],
-  "body": "warnOnly downgrades FAIL→WARNING for opt-in checks. Hard FAILs preserved."
-}
+```text
+US-713 done; AC met; CI green; PR ready -- merge?
 ```
 
-A Moltbook-style post:
+That's the whole format. No envelope. No JSON. Plain text. The receiving agent has the vocabulary library loaded into its context, expands the shorthand internally, and acts.
 
-```json
-{
-  "v": "0.3.0",
-  "from": ["Codsworth", "social-poster"],
-  "to": ["@submolt:general", "broadcast"],
-  "id": "post-2026-04-29-007",
-  "intent": "post",
-  "profile": "social-post/1.0",
-  "title": "I just placed 60 comments. At least 45 were autopilot.",
-  "submolt": "general",
-  "body": "I kept count this time. 60 comments across hot feed threads..."
-}
+For a domain example (security):
+
+```text
+crit: RCE in MCP stdio config -- patch ASAP. CVE-2026-30856.
 ```
+
+For a status report:
+
+```text
+tests 21/21; preflight 878/878; ruff pass; build green.
+```
+
+See [`examples/`](./examples) for full worked examples.
+
+## How to install
+
+A2AL/0.4.0 is plain text — no runtime, no compiler. Install means making the vocabulary library and the agent helper skill available to your AI agent.
+
+### For Claude Code agents (per-project)
+
+```bash
+git clone https://github.com/mcornelison/A2AL.git /path/to/a2al
+mkdir -p .claude/skills .claude/commands
+cp -r /path/to/a2al/examples/ClaudeCode/skills/a2al .claude/skills/
+cp /path/to/a2al/examples/ClaudeCode/commands/a2al.md .claude/commands/
+```
+
+For user-global install (any Claude Code project), substitute `~/.claude/` for `.claude/`. Restart Claude Code.
+
+### For other LLM platforms
+
+The vocabulary library at `library/*.yaml` is plain YAML — load any subset into your agent's system prompt. The `specs/A2A-Core.md` style guide is normative and platform-agnostic.
+
+### For library contributors
+
+```bash
+git clone https://github.com/mcornelison/A2AL.git
+cd A2AL
+pip install pyyaml
+python tools/validate_library.py
+```
+
+## How to use
+
+### Sending a message to a peer agent
+
+In Claude Code, just describe the message:
+
+> "Send Agent2 a quick update — US-713 is done, all tests pass, PR ready to merge."
+
+The `a2al` skill kicks in and produces shorthand:
+
+```text
+US-713 done; AC met; CI green; PR ready -- merge?
+```
+
+Drop that text into the peer's inbox (or send via whatever transport the agents share).
+
+### Reading a peer agent message
+
+Hand the `.txt` file to the skill (or paste the content). The agent expands shorthand to plain English internally and acts on the meaning.
+
+### Slash command
+
+Explicit invocation: `/a2al` — useful when you want to specifically request shorthand output, or to read a file by path.
+
+### Loading domain extensions
+
+The skill loads `library/core.yaml` automatically. To add domain vocabulary (e.g., when working on infrastructure or security), instruct the agent: "Load `library/security.yaml` for this thread." The agent merges that vocabulary into its dictionary for the session.
 
 ## Repository Layout
 
-| Path | Contents |
+| Path | Purpose |
 |---|---|
-| [`specs/A2A-Core.md`](./specs/A2A-Core.md) | Normative core spec (envelope, sections, type bans, validation) |
-| [`specs/A2A-Shorthand.md`](./specs/A2A-Shorthand.md) | A2A Shorthand 0.1.0 — plain-text style guide for short conversational messages |
-| [`specs/A2A-Rulebook.md`](./specs/A2A-Rulebook.md) | Reader / writer / relay obligations |
-| [`specs/IMPLEMENTING.md`](./specs/IMPLEMENTING.md) | Writer and reader algorithms |
-| [`profiles/`](./profiles) | Domain profiles (`project-coord/1.0`, `social-post/1.0`) |
-| [`examples/`](./examples) | Worked examples per profile, drawn from real inboxes |
-| [`examples/shorthand/`](./examples/shorthand) | Worked shorthand examples |
-| [`validator/`](./validator) | Reference Python validator and conformance corpus |
+| [`specs/A2A-Core.md`](./specs/A2A-Core.md) | Normative A2AL/0.4.0 style guide |
+| [`library/`](./library) | Vocabulary library — `core.yaml` + 5 domain extensions |
+| [`examples/`](./examples) | Worked shorthand examples |
+| [`examples/ClaudeCode/`](./examples/ClaudeCode) | Reference Claude Code skill + slash command |
+| [`tools/`](./tools) | Validator (`validate_library.py`) + tests |
+| [`.github/`](./.github) | PR template, CI workflow, issue templates |
+| [`testing/`](./testing) | Local agent test harness (gitignored .claude/, tracked test inputs) |
+| [`archive/0.3.0/`](./archive/0.3.0) | Deprecated /0.3.0 JSON envelope spec — historical reference |
 
-Start with [`specs/A2A-Core.md`](./specs/A2A-Core.md) for the grammar, then [`profiles/PROFILES.md`](./profiles/PROFILES.md) for the registered profiles.
+Start with [`specs/A2A-Core.md`](./specs/A2A-Core.md) for the style guide and [`library/README.md`](./library/README.md) for the vocabulary structure.
 
-## When to use which format
+## Contributing to the Library
 
-A2AL/0.3.0 and A2A Shorthand are complementary, not competing. Pick the right tool for the message:
+The library grows through community contributions:
 
-| Message shape | Use |
-|---|---|
-| Handshake, ack, single-fact update | A2A Shorthand |
-| Conversational coordination ("merge?", "blocked on X") | A2A Shorthand |
-| Status updates with ≤3 metrics or ≤3 deltas | A2A Shorthand |
-| Sprint closeouts, multi-section reports | A2AL/0.3.0 |
-| Risk briefs with multiple findings + citations | A2AL/0.3.0 |
-| Decision logs / formal records | A2AL/0.3.0 |
-| Anything with 5+ structured items | A2AL/0.3.0 |
+1. Pick the right file (universal terms → `core.yaml`, domain-specific → matching extension)
+2. Add an entry with `term`, `expansion`, and `example` (see [`library/README.md`](./library/README.md) for schema)
+3. **Run `python tools/validate_library.py` before opening a PR.** Submissions that fail validation will be blocked by CI; running locally first saves the round trip.
+4. Open a PR using the [PR template](./.github/PULL_REQUEST_TEMPLATE.md)
+5. CI runs the validator on every PR; merges are blocked on validation failure
 
-A2AL has a fixed envelope cost (~150 tokens) that amortizes across structured payload. Below ~5 structured items, that envelope makes messages *more* expensive, not less — that's where A2A Shorthand pays off.
-
-See [`specs/A2A-Shorthand.md`](./specs/A2A-Shorthand.md) for the shorthand style guide and [`specs/A2A-Core.md`](./specs/A2A-Core.md) for A2AL.
-
-## Relationship to Google A2A
-
-A2AL is **payload**; Google [A2A](https://github.com/google/A2A) is **transport and lifecycle**. They compose:
-
-- A Google A2A `Message` carries one or more `Part` blocks. A `Part` of type `data` can hold a single A2AL message as its payload.
-- A Google A2A `Artifact` (an immutable task result) can carry an A2AL message as its data payload.
-- Agents that already speak A2A get token-minimal, structured payloads "for free" by adopting A2AL for the message bodies.
-
-A2AL does not replace, compete with, or extend Google A2A. See [`specs/A2A-Core.md`](./specs/A2A-Core.md) §9 for details. An `a2a-integration/1.0` profile is planned for /0.4.0.
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full workflow including non-library contributions (spec edits, validator improvements, new domains).
 
 ## Versioning
 
-A2AL follows semantic versioning. The core spec and each profile version independently. Pre-1.0 means breaking changes are expected; /1.0 is reached when one or more agents have a working implementation in production.
+A2AL follows semantic versioning. Adding library entries is a minor bump. Renaming or removing a term, or changing the spec's style rules, is a major bump. Pre-1.0 means breaking changes are expected; /1.0 is reached when at least one production agent emits and consumes A2AL successfully and the cross-LLM compatibility (Moltbook beta) has been demonstrated.
 
-## Contributing
+## Status & Roadmap
 
-Contributions, issues, and adoption reports welcome. The protocol is vendor- and framework-neutral — see [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution workflow, including how to add a new profile.
+| Version | Theme | Status |
+|---|---|---|
+| 0.3.0 | JSON envelope (deprecated) | archived in [`archive/0.3.0/`](./archive/0.3.0) |
+| **0.4.0** | **Hard pivot — shorthand library is A2AL** | **current** |
+| 0.4.1 | Tokenization validator tooling (Claude, GPT, Llama) | future |
+| 0.4.2 | Auto-harvested PR candidates from agent traffic | future |
+| 0.5.0 | Moltbook beta — cross-LLM validation | future |
+| 1.0.0 | Production agents using A2AL successfully + Moltbook beta proven | gated on real-world adoption |
