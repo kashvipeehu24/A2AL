@@ -1,0 +1,4 @@
+domain: missing-expansion
+description: an entry has no expansion field
+entries:
+  - term: solo

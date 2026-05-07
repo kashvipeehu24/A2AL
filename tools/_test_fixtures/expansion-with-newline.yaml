@@ -1,0 +1,5 @@
+domain: expansion-with-newline
+description: expansion contains a newline
+entries:
+  - term: foo
+    expansion: "line one\nline two"

@@ -1,0 +1,4 @@
+description: missing the domain field
+entries:
+  - term: foo
+    expansion: foo bar

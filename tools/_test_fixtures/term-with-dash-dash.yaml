@@ -1,0 +1,5 @@
+domain: term-with-dash-dash
+description: term contains -- which clashes with the spec separator
+entries:
+  - term: foo--bar
+    expansion: should fail

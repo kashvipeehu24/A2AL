@@ -1,0 +1,9 @@
+domain: valid
+description: A valid fixture for cross-checking the happy path
+entries:
+  - term: ZZZ
+    expansion: zulu zulu zulu
+    example: "ZZZ test"
+  - term: YYY
+    expansion: yankee yankee yankee
+    example: "YYY trial"

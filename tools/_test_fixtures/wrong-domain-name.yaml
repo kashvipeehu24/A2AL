@@ -1,0 +1,5 @@
+domain: notmatching
+description: domain field doesn't match the filename stem
+entries:
+  - term: foo
+    expansion: foo bar

@@ -1,0 +1,4 @@
+domain: missing-term
+description: an entry has no term field
+entries:
+  - expansion: just an expansion
