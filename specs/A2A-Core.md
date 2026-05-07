@@ -1,9 +1,11 @@
-# A2A Shorthand — `a2a-shorthand/0.1.0`
+# A2AL — `A2AL/0.4.0` Core Specification
 
-**Status:** Reference style guide. Sibling to A2AL/0.3.0 — not a replacement.
-**See also:** `specs/A2A-Core.md` (A2AL/0.3.0), `examples/shorthand/`, `examples/ClaudeCode/skills/a2a-shorthand/`
+**Status:** Normative. Replaces the deprecated A2AL/0.3.0 JSON envelope spec.
+**See also:** [`README.md`](../README.md), [`library/`](../library), [`examples/`](../examples), [`examples/ClaudeCode/skills/a2al/`](../examples/ClaudeCode/skills/a2al)
 
-A2A Shorthand is a *style guide* and *recommended jargon palette* for agent-to-agent messages where structural density is too low to justify A2AL/0.3.0's envelope. It is plain text — not a JSON wire format. It is not a constructed/symbolic language; it is a tight dialect of English chosen to tokenize efficiently on Claude's vocabulary.
+A2AL is an open vocabulary library and shorthand style guide for token-efficient agent-to-agent communication. It is plain text — no JSON envelope, no parser dependency. Agents share a common dictionary (`library/core.yaml`) and load domain extensions (`library/<domain>.yaml`) as needed.
+
+A2AL is a *style guide* and *recommended jargon palette* for agent-to-agent messages, paired with an open contributable vocabulary library at [`library/`](../library). It is plain text — not a JSON wire format. It is not a constructed/symbolic language; it is a tight dialect of English chosen to tokenize efficiently on Claude's vocabulary (and other modern LLM tokenizers).
 
 ## 1. Goals & Non-Goals
 
@@ -25,28 +27,23 @@ A2A Shorthand is a *style guide* and *recommended jargon palette* for agent-to-a
 
 Minimize tokens on Claude's tokenizer specifically. The design uses single-token English words and standard tech jargon, both of which Claude's BPE handles efficiently.
 
-## 2. When to use Shorthand vs A2AL/0.3.0
+## 2. When to use A2AL
 
-```
-if message has 5+ structured items in ANY category (delta/status/risk/etc)
-   OR spans 3+ section types
-   OR needs structured citations (refs)
-   OR is a formal record (sprint closeout, decision log, risk brief):
-       → use A2AL/0.3.0
-elif message is conversational, short, declarative, or single-purpose:
-       → use A2A Shorthand
-else (in between):
-       → A2A Shorthand by default; promote to A2AL if it grows
-```
+A2AL is for **agent-to-agent communication** — messages dropped between AI agents (or between automated processes). The format is plain text, designed to be produced and consumed by an LLM with the library loaded into its system prompt.
 
-| Message shape | Use |
-|---|---|
-| Handshakes, acks, single-fact updates | A2A Shorthand |
-| Conversational coordination ("merge?", "blocked on X") | A2A Shorthand |
-| Status updates with ≤3 metrics or ≤3 deltas | A2A Shorthand |
-| Sprint closeouts, multi-section reports, ≥5 deltas | A2AL/0.3.0 |
-| Risk briefs with multiple findings + citations | A2AL/0.3.0 |
-| Anything that compresses well into structured sections | A2AL/0.3.0 |
+**Use A2AL when:**
+
+- Sending status updates, action requests, blocker notifications, ack messages between agents
+- Compressing prose reports for downstream agent consumption
+- Storing agent-to-agent message logs (compact archival)
+
+**Do NOT use A2AL when:**
+
+- The audience is human — write Markdown instead. A2AL is not optimized for human readability.
+- The content is genuinely unstructured prose with no shorthand savings (e.g., a poem). Plain text is fine.
+- You need a structured envelope (timestamps, signatures, routing metadata) — that's transport, out of scope for A2AL.
+
+For the historical record, A2AL/0.3.0 used a JSON envelope; that approach was abandoned because it cost more tokens than plain Markdown on real conversational traffic. See [`archive/0.3.0/`](../archive/0.3.0) for the deprecated spec.
 
 ## 3. Style Rules
 
@@ -86,51 +83,19 @@ else (in between):
 - ❌ **Dropping critical context** for terseness (e.g., dropping the story ID makes the message unactionable — false economy)
 - ❌ **Stacking facts without separators** — harder for the receiver to parse
 
-## 4. Recommended Glossary
+## 4. Vocabulary Library
 
-A curated palette of words and abbreviations that almost certainly tokenize as 1 token in Claude's vocabulary. Use these by default; the LLM's full vocabulary is available beyond this list.
+The vocabulary lives in [`library/`](../library) — one YAML file per domain. Always-loaded core: [`library/core.yaml`](../library/core.yaml) (~78 universal terms). Domain extensions:
 
-> Token counts here are estimates. Validate with the Anthropic tokenizer before depending on a specific term.
+- [`library/programming.yaml`](../library/programming.yaml) — code-review and dev-process specifics (`MR`, `CR`, `IaC`, `code-complete`, etc.)
+- [`library/infrastructure.yaml`](../library/infrastructure.yaml) — cloud/orchestration/data (`DAG`, `ETL`, `k8s`, `AWS`, `Azure`, `GCP`, `VPC`, `VNet`, etc.)
+- [`library/project-mgmt.yaml`](../library/project-mgmt.yaml) — specialized roles and SRE/ops vocabulary (`EM`, `TPM`, `SRE`, `SLA`, `SLO`, `SLI`, `MTTR`, `RCA`)
+- [`library/security.yaml`](../library/security.yaml) — security threats and controls (`RCE`, `XSS`, `SSRF`, `CVE`, `CVSS`, `OWASP`, `MFA`, `IAM`, `RBAC`)
+- [`library/ai-agents.yaml`](../library/ai-agents.yaml) — agents/LLM-specific (`LLM`, `MCP`, `A2A`, `RAG`, `KV`)
 
-### 4.1 States
+See [`library/README.md`](../library/README.md) for entry schema and loading model.
 
-`done`, `complete`, `finished`, `shipped`, `deployed`, `merged`, `released`, `passed`, `passing`, `ok`, `green`, `healthy`, `working`, `ready`, `pending`, `waiting`, `queued`, `started`, `active`, `paused`, `stalled`, `deferred`, `blocked`, `failed`, `failing`, `broken`, `red`, `yellow`
-
-### 4.2 Actions (verbs — imperative)
-
-`merge`, `ship`, `deploy`, `release`, `push`, `pull`, `revert`, `rollback`, `review`, `approve`, `reject`, `sign-off`, `block`, `unblock`, `defer`, `escalate`, `assign`, `claim`, `release`, `test`, `verify`, `validate`, `implement`, `fix`, `patch`, `refactor`, `document`, `add`, `remove`, `modify`
-
-### 4.3 Domain abbreviations
-
-| Cluster | Terms |
-|---|---|
-| Code/process | `PR`, `MR`, `CR`, `AC`, `CI`, `CD`, `DQ`, `IaC` |
-| Roles | `PM`, `QA`, `DEV`, `EM`, `TPM`, `SRE`, `DEVOPS`, `SEC`, `ARCH`, `PMO` |
-| Quality/SLA | `SLA`, `SLO`, `SLI`, `MTTR`, `RCA` |
-| Security | `RCE`, `XSS`, `SSRF`, `SQLi`, `CVE`, `CVSS`, `OWASP`, `MFA`, `IAM`, `RBAC` |
-| API/infra | `API`, `SDK`, `CLI`, `DAG`, `ETL`, `ELT`, `DB`, `k8s`, `AWS`, `Azure`, `GCP`, `VPC`, `VNet` |
-| Agents/AI | `LLM`, `MCP`, `A2A`, `RAG`, `KV` |
-
-### 4.4 Severity (5 levels)
-
-`crit`, `high`, `med`, `low`, `info`
-
-(Same scale as A2AL/0.3.0 risk profile.)
-
-### 4.5 Multi-token but worth it
-
-Some phrases are 2–3 tokens but still net-positive when they replace longer English. Use sparingly:
-
-- `code-complete`, `feature-flag`, `dead-letter`, `fast-follow`
-
-### 4.6 Not in the glossary (deliberately)
-
-- ❌ Vowel-dropped forms (`cmplt`, `prgm`)
-- ❌ Single-letter codes (`c`, `b`, `r`)
-- ❌ Emoji or rare Unicode (✓ ✗ ⟳ 🟢 🔴)
-- ❌ Greek letters (`Δ`, `λ`)
-
-The palette is recommended, not enforced. Writers may use any term in standard form (e.g., `Spark`, `Fabric`, `OAuth2`).
+The library is open and contributable. To propose a new term, open a PR adding an entry to the appropriate domain file (or core, if universal). Run `python tools/validate_library.py` locally first.
 
 ## 5. Extending the Vocabulary
 
@@ -174,11 +139,11 @@ Net-positive only when the term will be used 3+ times in the thread. Defining on
 
 ### 5.6 Promotion to canonical glossary
 
-1. Adopted in the wild — agents define and use new shortenings in real conversations
-2. Captured locally — user (or a periodic agent task) collects shortenings used 5+ times across multiple threads
-3. Reviewed — user evaluates each candidate against criteria: tokenizes well, unambiguous, broadly applicable
-4. Promoted — added to the glossary in a minor version bump (e.g., `0.1.0` → `0.2.0`)
-5. Documented — `VersionHistory.md` lists the new vocabulary additions
+1. **Adopted in the wild** — agents define and use new shortenings in real conversations using `term=expansion` syntax
+2. **Captured locally** — user (or a periodic agent task) collects shortenings used 5+ times across multiple threads
+3. **Reviewed** — proposer evaluates the candidate against criteria: tokenizes well, unambiguous, broadly applicable
+4. **Promoted** — open a PR adding an entry to `library/<domain>.yaml`. CI runs `tools/validate_library.py` to enforce schema and uniqueness.
+5. **Documented** — `VersionHistory.md` lists library minor-version bumps when entries are added.
 
 Vocabulary additions = minor versions. Structural changes to the style rules = major.
 
