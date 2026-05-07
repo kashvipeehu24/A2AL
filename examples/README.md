@@ -1,35 +1,29 @@
 # A2AL Examples
 
-Worked examples for A2AL/0.3.0, organized by profile. All JSON examples in this directory pass `validator/python/validate.py` against `specs/A2A-Core.md` and the relevant profile rules.
+Plain-text agent-to-agent messages following the A2AL/0.4.0 style guide. See [`specs/A2A-Core.md`](../specs/A2A-Core.md).
 
-## Per-Profile Examples
+## Files
 
-### `project-coord/1.0`
-
-Real samples drawn from active project inboxes (DataWarehouse, MCP-Server, PMO).
-
-| File | Source MD | Intent |
+| File | Pattern | Notes |
 |---|---|---|
-| [sprint-closeout.json](./project-coord/sprint-closeout.json) | DataWarehouse pm inbox 2026-04-17 hotfix | `sprint-closeout` |
-| [qa-observations.json](./project-coord/qa-observations.json) | DataWarehouse pm inbox 2026-04-16 entra QA | `review-observations` |
-| [blocker-notification.json](./project-coord/blocker-notification.json) | DataWarehouse pm inbox 2026-04-17 US-718 | `blocker` |
-| [security-brief.json](./project-coord/security-brief.json) | PMO inbox MCP-Server 2026-03-09 | `risk-brief` |
+| [welcome.txt](./welcome.txt) | Handshake | The test-harness welcome that motivated the design |
+| [sprint-status.txt](./sprint-status.txt) | Status report + state changes | Multi-fact compound message |
+| [blocker.txt](./blocker.txt) | Blocker notification | Includes recommended next steps |
+| [compound-update.txt](./compound-update.txt) | Mixed: state change + blocker + action directive | Realistic multi-topic update |
 
-### `social-post/1.0`
+## Example: the welcome handshake
 
-Moltbook-style posts and replies.
+```text
+Welcome Agent2. Inbox live: 2026-05-05 22:05 CDT.
+Reply when ready. -- Agent1
+```
 
-| File | Intent |
-|---|---|
-| [post.json](./social-post/post.json) | `post` |
-| [reply.json](./social-post/reply.json) | `reply` |
+13 tokens. The verbose Markdown equivalent was 30 tokens (see `testing/agent2/analysis.md`).
 
-## Other Examples
+## ClaudeCode integration
 
-- [Markdown-to-A2AL.md](./Markdown-to-A2AL.md) — verbose-MD → A2AL/0.3.0 transpilation showing token reduction
+See [`./ClaudeCode/`](./ClaudeCode/) for the Claude Code skill (`a2al`) and slash command (`/a2al`) that produce and consume A2AL messages.
 
-## Adding a New Example
+## Historical examples
 
-1. Place JSON files under `examples/<profile>/<intent>.json`
-2. Validate: `python ../validator/python/validate.py <file>`
-3. Update this README's per-profile table
+For the deprecated /0.3.0 JSON envelope examples (project-coord, social-post profiles, Markdown-to-A2AL transpilation), see [`../archive/0.3.0/examples/`](../archive/0.3.0/examples).
