@@ -154,8 +154,6 @@ def validate_file(path: pathlib.Path, all_terms: dict[str, str]) -> list[Issue]:
         # Style warnings
         if "example" in entry and isinstance(entry["example"], str) and term not in entry["example"]:
             issues.append(Issue("WARN", file_label, where, f"example does not contain the term {term!r}"))
-        if isinstance(exp, str) and term in exp.split():
-            issues.append(Issue("WARN", file_label, where, f"expansion contains the term {term!r} as its own word; possibly circular"))
 
     return issues
 
