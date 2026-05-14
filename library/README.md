@@ -1,6 +1,8 @@
 # A2AL Vocabulary Library
 
-The open vocabulary for A2AL/0.4.0 agent-to-agent communication. Each file is a YAML list of `term`/`expansion` entries that an agent loads into its system prompt to enable shorthand emit and decode.
+The open vocabulary for A2AL/0.4.1 agent-to-agent communication. Each file is a YAML list of `term`/`expansion` entries that an agent loads into its system prompt to enable shorthand emit and decode.
+
+> **Note on 0.4.1 (2026-05-13):** No library content changed in 0.4.1 — it added the normative audience rule and routing header to the spec only. Header fields (`from`, `to`, `date`, `topic`, `audience`, `urgency`, `refs`, `in-reply-to`) are structural spec elements, not content vocabulary, and live in [`specs/A2A-Core.md`](../specs/A2A-Core.md) §3.
 
 ## Files
 
@@ -40,7 +42,7 @@ Every entry is a YAML object with these fields:
 | `example` | recommended | string | One canonical usage in a real shorthand sentence. |
 | `notes` | optional | string | When to use, when to avoid, ambiguity warnings. |
 
-Future fields (auto-populated by tooling in v0.4.1+, don't write today):
+Future fields (auto-populated by tooling in v0.4.2+, don't write today):
 
 - `tokens: {claude: int, gpt: int, llama: int}` — per-tokenizer cost
 - `usage_count: int` — frequency in real agent traffic
@@ -101,6 +103,6 @@ See the top-level [`CONTRIBUTING.md`](../CONTRIBUTING.md) for the full workflow.
 
 ## Versioning
 
-The library follows the parent A2AL version. Adding new entries is a minor version bump (e.g., A2AL/0.4.0 → A2AL/0.4.1). Renaming or removing a term is a major bump.
+The library follows the parent A2AL version. Adding new entries is a minor version bump (e.g., A2AL/0.4.1 → A2AL/0.4.2). Renaming or removing a term is a major bump.
 
 `VersionHistory.md` records library additions per release.

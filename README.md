@@ -2,7 +2,7 @@
 
 A2AL is an open, contributable vocabulary library that lets AI agents communicate in token-efficient shorthand. It is plain text, English-derived, designed to tokenize as 1 token per concept on modern LLM tokenizers. Agents share a common dictionary and extend it for their domain.
 
-**Status:** A2AL/0.4.0. Pre-1.0; subject to refinement before /1.0.
+**Status:** A2AL/0.4.1. Pre-1.0; subject to refinement before /1.0.
 
 **License:** Apache-2.0 — see [LICENSE](./LICENSE).
 
@@ -12,31 +12,48 @@ In real multi-agent execution, 60–90% of inter-agent tokens are mechanical was
 
 ## How A2AL looks
 
-A complete agent-to-agent message:
+A complete agent-to-agent message — one routing header line, then the body:
 
 ```text
+from=Byte(DEV); to=Ledger(PM); date=2026-05-13; topic=US-713 closeout; audience=agent
 US-713 done; AC met; CI green; PR ready -- merge?
 ```
 
-That's the whole format. No envelope. No JSON. Plain text. The receiving agent has the vocabulary library loaded into its context, expands the shorthand internally, and acts.
+That's the whole format. No envelope. No JSON. Plain text. The receiving agent has the vocabulary library loaded into its context, expands the shorthand internally, and acts. The header is mandatory (see `specs/A2A-Core.md` §3); the body uses the style guide and library.
 
 For a domain example (security):
 
 ```text
+from=Audrey(SEC); to=Byte(DEV); date=2026-05-13; topic=CVE-2026-30856; audience=agent; urgency=urgent
 crit: RCE in MCP stdio config -- patch ASAP. CVE-2026-30856.
 ```
 
 For a status report:
 
 ```text
+from=Byte(DEV); to=Ledger(PM); date=2026-05-13; topic=preflight status; audience=agent
 tests 21/21; preflight 878/878; ruff pass; build green.
 ```
 
 See [`examples/`](./examples) for full worked examples.
 
+## When to write A2AL vs Markdown
+
+A2AL is **mandatory** when the audience is agent-only and **wrong** when a human is in the audience. No hybrid mode; no duplication.
+
+| Situation | Format |
+|---|---|
+| Agent → agent, no human review expected | A2AL MUST |
+| Sender identified itself as an AI agent in an inbound message | A2AL MUST (reactive rule) |
+| Human will read or review the message at any point | Markdown |
+| Audience ambiguous or mixed | Markdown (default) |
+| RCAs, ADRs, design specs, long-form deliberation | Markdown (humans return to these) |
+
+Channels can also be declared agent-only by convention (e.g., paths under `agent-channel/`, `.a2a/`, `*/inbox-internal/`).
+
 ## How to install
 
-A2AL/0.4.0 is plain text — no runtime, no compiler. Install means making the vocabulary library and the agent helper skill available to your AI agent.
+A2AL/0.4.1 is plain text — no runtime, no compiler. Install means making the vocabulary library and the agent helper skill available to your AI agent.
 
 ### For Claude Code agents (per-project)
 
@@ -71,20 +88,28 @@ Once the skill files are in `.claude/skills/` and `.claude/commands/`, the skill
 For an **existing CLAUDE.md**: append this section. For a **new project**: this can be the whole file, or supplement with project-specific guidance.
 
 ````markdown
-## A2AL/0.4.0 — Agent-to-Agent Communication
+## A2AL/0.4.1 — Agent-to-Agent Communication
 
-This project uses [A2AL/0.4.0](https://github.com/mcornelison/A2AL) for peer-to-peer agent messages.
+This project uses [A2AL/0.4.1](https://github.com/mcornelison/A2AL) for peer-to-peer agent messages.
 
 ### Identity
-You are **[AgentName]**, a [role] agent. When sending A2AL messages, sign as `[AgentName]/[role]` (e.g., `Hawkeye/QA`, `Byte/DEV`). Roles are free-form.
+You are **[AgentName]**, a [role] agent. When sending A2AL messages, sign as `[AgentName]/[role]` or `[AgentName]([role])` in the routing header (e.g., `Hawkeye/QA`, `Byte(DEV)`). Roles are free-form.
 
 ### Repo location
 The A2AL repo is cloned at `[/absolute/path/to/A2AL]`. The vocabulary library is at `[/absolute/path/to/A2AL]/library/`.
 
-### When to use A2AL
-- **A2AL shorthand** for peer agent messages: status updates, acks, action requests, blockers, decisions
-- **Markdown** when the audience is human
-- **Plain text** when the content is unstructured prose with no shorthand savings
+### When to use A2AL (audience rule)
+- **Agent-only audience → A2AL MUST.** Both sender and recipient are agents; no human will read or review.
+- **Human in the audience → Markdown.** A human will triage, archive, or review at any point.
+- **Inbound says `audience=agent` or sender is identified as an AI agent → reply MUST be A2AL** (reactive rule).
+- **Default → Markdown** when audience is ambiguous or mixed.
+
+### Routing header
+Every A2AL message begins with one line:
+```text
+from=<Name>(<Role>); to=<Name>(<Role>); date=<ISO>; topic=<short label>
+```
+Optional fields: `audience=agent|mixed`, `urgency=low|medium|high|urgent`, `refs=<id>,<id>`, `in-reply-to=<id>`.
 
 ### Loading the library
 Always have `[/absolute/path/to/A2AL]/library/core.yaml` available (~77 universal terms). Add domain extensions per the conversation:
@@ -125,11 +150,11 @@ After restarting Claude Code, prompt the agent:
 ```
 Verify A2AL is wired up:
 1. Read [/absolute/path/to/A2AL]/library/core.yaml and report how many entries it has plus 3 sample terms.
-2. Compose this as A2AL shorthand: "all tests pass, build is green, PR ready to merge"
+2. Compose this as an A2AL message to peer "Agent2": "all tests pass, build is green, PR ready to merge". Include the routing header.
 3. Confirm /a2al is registered as a slash command.
 ```
 
-Expected: ~77 entries reported (sample terms like `done`, `merge`, `PR`); shorthand output something like `tests pass; build green; PR ready -- merge?`; `/a2al` recognized. If any step fails, check that the skill files actually copied into `.claude/skills/a2al/` and `.claude/commands/a2al.md`, and that you restarted Claude Code.
+Expected: ~77 entries reported (sample terms like `done`, `merge`, `PR`); a two-line output with a `from=...; to=Agent2; date=...; topic=...; audience=agent` header followed by a body like `tests pass; build green; PR ready -- merge?`; `/a2al` recognized. If any step fails, check that the skill files actually copied into `.claude/skills/a2al/` and `.claude/commands/a2al.md`, and that you restarted Claude Code.
 
 ### Multi-agent setup
 
@@ -150,9 +175,10 @@ In Claude Code, just describe the message:
 
 > "Send Agent2 a quick update — US-713 is done, all tests pass, PR ready to merge."
 
-The `a2al` skill kicks in and produces shorthand:
+The `a2al` skill kicks in and produces a header + body:
 
 ```text
+from=Byte(DEV); to=Agent2; date=2026-05-13; topic=US-713 closeout; audience=agent
 US-713 done; AC met; CI green; PR ready -- merge?
 ```
 
@@ -174,7 +200,7 @@ The skill loads `library/core.yaml` automatically. To add domain vocabulary (e.g
 
 | Path | Purpose |
 |---|---|
-| [`specs/A2A-Core.md`](./specs/A2A-Core.md) | Normative A2AL/0.4.0 style guide |
+| [`specs/A2A-Core.md`](./specs/A2A-Core.md) | Normative A2AL/0.4.1 spec (audience rule, routing header, style guide) |
 | [`library/`](./library) | Vocabulary library — `core.yaml` + 5 domain extensions |
 | [`examples/`](./examples) | Worked shorthand examples |
 | [`examples/ClaudeCode/`](./examples/ClaudeCode) | Reference Claude Code skill + slash command |
@@ -206,8 +232,9 @@ A2AL follows semantic versioning. Adding library entries is a minor bump. Renami
 | Version | Theme | Status |
 |---|---|---|
 | 0.3.0 | JSON envelope (deprecated) | archived in [`archive/0.3.0/`](./archive/0.3.0) |
-| **0.4.0** | **Hard pivot — shorthand library is A2AL** | **current** |
-| 0.4.1 | Tokenization validator tooling (Claude, GPT, Llama) | future |
-| 0.4.2 | Auto-harvested PR candidates from agent traffic | future |
+| 0.4.0 | Hard pivot — shorthand library is A2AL | superseded by 0.4.1 |
+| **0.4.1** | **Audience rule + routing header (normative)** | **current** |
+| 0.4.2 | Tokenization validator tooling (Claude, GPT, Llama) | future |
+| 0.4.3 | Auto-harvested PR candidates from agent traffic | future |
 | 0.5.0 | Moltbook beta — cross-LLM validation | future |
 | 1.0.0 | Production agents using A2AL successfully + Moltbook beta proven | gated on real-world adoption |

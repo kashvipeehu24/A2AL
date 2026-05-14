@@ -2,6 +2,7 @@
 
 | Version | Date | Brief Name | Description |
 |---|---|---|---|
+| 0.4.1 | 2026-05-13 | Audience Rule + Routing Header | Two normative additions drawn from real-agent usage feedback (Ledger/PM, Kunai/DW-Arch, and a third Claude session): (1) **Audience rule** — agent-only audience → A2AL MUST; human in audience → Markdown; default Markdown when ambiguous. (2) **Routing header** — every A2AL message MUST begin with a single-line header (`from=...; to=...; date=...; topic=...` plus optional `audience`, `urgency`, `refs`, `in-reply-to`). Adds a reactive rule: agent-identified inbound → A2AL reply. No library content changes. Skill rewritten to lead with audience rule + header. See `specs/A2A-Core.md` §§2–3. |
 | 0.4.0 | 2026-05-07 | Open Vocabulary Library | A2AL is now a plain-text shorthand spec + open vocabulary library at `library/*.yaml`. The /0.3.0 JSON envelope is deprecated and archived. Reference Python validator (`tools/validate_library.py`) enforces schema and cross-domain term uniqueness on every PR via GitHub Actions CI. Seed library: 117 entries across 6 files (core + programming + infrastructure + project-mgmt + security + ai-agents). |
 | 0.3.1 | 2026-05-05 | Plain-text agent shorthand (sibling) | Sibling to A2AL/0.3.0 for short conversational messages. Style guide and recommended jargon palette designed to tokenize efficiently on Claude's tokenizer. Plain text — no envelope, no JSON. Decision rule: 5+ structured items = A2AL; below = shorthand. |
 | 0.3.0 | 2026-05-05 | Flexible Object + Profiles (deprecated) | Flat-object format with descriptive envelope keys; positional section items; profile-extensible. Two reference profiles: `project-coord/1.0` and `social-post/1.0`. Reference Python validator runs in core + profile-aware modes. **Archived 2026-05-07** in favor of /0.4.0 after live test data showed the JSON envelope cost 1.46×–3.55× more tokens than plain Markdown. |
@@ -36,9 +37,9 @@ Library entry additions are batched into periodic minor-version bumps (usually m
 
 | Version | Theme |
 |---|---|
-| 0.4.1 | Tokenization validator tooling (auto-populate `tokens: {claude, gpt, llama}` per entry) |
-| 0.4.2 | Auto-harvested PR candidates from agent traffic |
-| 0.4.3 | Library search/lookup CLI |
+| 0.4.2 | Tokenization validator tooling (auto-populate `tokens: {claude, gpt, llama}` per entry) |
+| 0.4.3 | Auto-harvested PR candidates from agent traffic |
+| 0.4.4 | Library search/lookup CLI |
 | 0.5.0 | Moltbook beta — cross-LLM validation |
 | 0.5.x | Cross-platform skill installations (OpenAI Assistants, raw API, etc.) |
 | 1.0.0 | Production agents using A2AL successfully + Moltbook beta proven |

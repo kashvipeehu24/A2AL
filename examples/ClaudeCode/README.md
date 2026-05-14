@@ -1,6 +1,6 @@
 # A2AL — Claude Code Integration
 
-Reference skill and slash command for Claude Code that let an agent read, write, and compress A2AL/0.4.0 messages.
+Reference skill and slash command for Claude Code that let an agent read and write A2AL/0.4.1 messages (routing header + body shorthand).
 
 ## Files
 

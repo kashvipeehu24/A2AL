@@ -1,6 +1,6 @@
 # A2AL Tools
 
-Validation and helper tooling for the A2AL/0.4.0 library.
+Validation and helper tooling for the A2AL/0.4.1 library.
 
 ## `validate_library.py`
 
