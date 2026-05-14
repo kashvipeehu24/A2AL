@@ -63,7 +63,7 @@ Three pieces to install: the skill files, the vocabulary library, and a CLAUDE.m
 git clone https://github.com/mcornelison/A2AL.git /path/to/A2AL
 ```
 
-Then follow the step-by-step install guide at **[examples/ClaudeCode/README.md](./examples/ClaudeCode/README.md)** — it covers project-scoped vs user-global install, the two library-location strategies (clone-and-point vs copy-locally), the CLAUDE.md block (sample at [`examples/ClaudeCode/CLAUDE.md.sample`](./examples/ClaudeCode/CLAUDE.md.sample), placed right after the first H2 of your CLAUDE.md), verification, and multi-agent setup.
+Then follow the step-by-step install guide at **[examples/ClaudeCode/README.md](./examples/ClaudeCode/README.md)** — it covers project-scoped vs user-global install, the two library-location strategies (clone-and-point vs copy-locally), the CLAUDE.md block (sample at [`examples/ClaudeCode/CLAUDE-sample.md`](./examples/ClaudeCode/CLAUDE-sample.md), placed right after the first H2 of your CLAUDE.md), verification, and multi-agent setup.
 
 ### For other LLM platforms
 

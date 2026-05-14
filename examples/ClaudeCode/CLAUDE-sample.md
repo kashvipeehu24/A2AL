@@ -1,5 +1,5 @@
 <!--
-  CLAUDE.md.sample — A2AL/0.4.1
+  CLAUDE-sample.md — A2AL/0.4.1
 
   Two ways to use this file:
 

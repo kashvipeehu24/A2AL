@@ -8,7 +8,7 @@ Reference skill, slash command, and sample CLAUDE.md for Claude Code. After inst
 |---|---|
 | [`skills/a2al/SKILL.md`](./skills/a2al/SKILL.md) | A2AL skill — auto-invoked when the agent reads or writes a peer-agent message |
 | [`commands/a2al.md`](./commands/a2al.md) | Slash command `/a2al` — explicit invocation |
-| [`CLAUDE.md.sample`](./CLAUDE.md.sample) | Sample CLAUDE.md with the A2AL block in placement context |
+| [`CLAUDE-sample.md`](./CLAUDE-sample.md) | Sample CLAUDE.md with the A2AL block in placement context |
 
 ## What you install
 
@@ -16,7 +16,7 @@ Three independent pieces. Each can be project-scoped or user-global; the install
 
 1. **Skill + slash command** — copied into `.claude/skills/a2al/` and `.claude/commands/a2al.md`.
 2. **Vocabulary library** — either left inside a cloned A2AL repo and referenced by absolute path, or copied next to your skill files. Choose one (§ Library location).
-3. **CLAUDE.md A2AL block** — tells the agent its identity, the library path, the audience rule, and (if peers exist) the inbox convention. Copied from [`CLAUDE.md.sample`](./CLAUDE.md.sample).
+3. **CLAUDE.md A2AL block** — tells the agent its identity, the library path, the audience rule, and (if peers exist) the inbox convention. Copied from [`CLAUDE-sample.md`](./CLAUDE-sample.md).
 
 After all three are in place, restart Claude Code. The skill auto-discovers; no enable step.
 
@@ -92,11 +92,11 @@ The skill and command files do **not** have hardcoded library paths. They rely o
 
 ### New project (no CLAUDE.md yet)
 
-Copy [`CLAUDE.md.sample`](./CLAUDE.md.sample) to your project root as `CLAUDE.md`, then fill in every `[bracketed placeholder]`. Add any project-specific sections after the `## A2AL/0.4.1` block.
+Copy [`CLAUDE-sample.md`](./CLAUDE-sample.md) to your project root as `CLAUDE.md`, then fill in every `[bracketed placeholder]`. Add any project-specific sections after the `## A2AL/0.4.1` block.
 
 ### Existing CLAUDE.md
 
-Open [`CLAUDE.md.sample`](./CLAUDE.md.sample) and copy only the `## A2AL/0.4.1 — Agent-to-Agent Communication` section and all its subsections (Identity, Library location, Audience rule, Routing header, Inbox / outbox, Reference).
+Open [`CLAUDE-sample.md`](./CLAUDE-sample.md) and copy only the `## A2AL/0.4.1 — Agent-to-Agent Communication` section and all its subsections (Identity, Library location, Audience rule, Routing header, Inbox / outbox, Reference).
 
 **Where to paste:** immediately AFTER your first H2 (the project identity / overview heading) and BEFORE any workflow, conventions, or build/test sections.
 
