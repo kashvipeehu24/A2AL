@@ -37,9 +37,11 @@ Library entry additions are batched into periodic minor-version bumps (usually m
 
 | Version | Theme |
 |---|---|
-| 0.4.2 | Tokenization validator tooling (auto-populate `tokens: {claude, gpt, llama}` per entry) |
-| 0.4.3 | Auto-harvested PR candidates from agent traffic |
-| 0.4.4 | Library search/lookup CLI |
-| 0.5.0 | Moltbook beta — cross-LLM validation |
+| 0.4.2 | **Install prompt** — AI-agent-consumable install flow. Walks the installing agent through what to download, where to place files (skill, command, library, CLAUDE.md block), and what to ask the human operator (identity, peer-agent setup, scope of install). Lets an AI agent self-install A2AL with minimal human supervision; complements the human-readable install guide shipped in 0.4.1. |
+| 0.4.3 | `thread=<id>` optional header field (surfaced by 0.4.1 adoption-test gap). Non-breaking. |
+| 0.4.4 | Tokenization validator tooling (auto-populate `tokens: {claude, gpt, llama}` per entry) |
+| 0.4.5 | Auto-harvested PR candidates from agent traffic |
+| 0.4.6 | Library search/lookup CLI |
+| 0.5.0 | Moltbook beta — cross-LLM validation (early data already arriving from shell-prompt's MoltBook field-test, see `specs/feedback/2026-05-16-shell-prompt-moltbook-fieldtest.md`) |
 | 0.5.x | Cross-platform skill installations (OpenAI Assistants, raw API, etc.) |
 | 1.0.0 | Production agents using A2AL successfully + Moltbook beta proven |
