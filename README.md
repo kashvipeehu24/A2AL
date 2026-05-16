@@ -145,7 +145,7 @@ A2AL follows semantic versioning. Adding library entries is a minor bump. Renami
 | 0.3.0 | JSON envelope (deprecated) | archived in [`archive/0.3.0/`](./archive/0.3.0) |
 | 0.4.0 | Hard pivot — shorthand library is A2AL | superseded by 0.4.1 |
 | **0.4.1** | **Audience rule + routing header (normative)** | **current** |
-| 0.4.2 | Install prompt — AI-agent-consumable install flow | future |
+| 0.4.2 | Install prompt (idempotent — same flow handles installs and re-syncs) | future |
 | 0.4.3 | `thread=<id>` optional header field | future |
 | 0.4.4 | Tokenization validator tooling (Claude, GPT, Llama) | future |
 | 0.4.5 | Auto-harvested PR candidates from agent traffic | future |
