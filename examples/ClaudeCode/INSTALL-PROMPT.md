@@ -83,7 +83,32 @@ If q1 put you in re-sync mode, do NOT run q2–q5. Instead:
 
 ## Phase 2 — Execution
 
-_(filled in by Tasks 6–9)_
+Five steps. Run e1–e5 in order. In re-sync mode, e4 is replaced by the diff loop (see "Re-sync diff loop" section below).
+
+### e1 — Acquire the A2AL repo
+
+**Fresh mode:**
+
+1. If `~/A2AL` does not exist on disk, run:
+   ```
+   git clone https://github.com/mcornelison/A2AL.git ~/A2AL
+   ```
+   Use `$HOME\A2AL` on Windows; either path notation is fine.
+2. If `~/A2AL` exists, check whether it is the A2AL clone:
+   ```
+   git -C ~/A2AL remote get-url origin
+   ```
+   Expected: a URL ending in `mcornelison/A2AL` (or `mcornelison/A2AL.git`).
+   - If it matches: run `git -C ~/A2AL pull --ff-only`. If the pull fails, warn but continue — the existing checkout is still usable.
+   - If it does not match (or the directory isn't a git repo at all): STOP. Ask the operator for an alternate clone path. Do not overwrite an unknown directory. After they answer, retry from step 1 with the new path. Store the chosen path as `clone_path`.
+
+By the end of e1, you have `clone_path` (defaulting to `~/A2AL`) pointing at an A2AL working tree on `main` or close to it.
+
+**Re-sync mode:**
+
+- Read `library_path` from Phase 1.
+- If `library_mode == clone-and-point`: the clone is at `dirname(dirname(library_path))`. Run `git -C <clone-path> pull --ff-only`. Warn but continue on failure.
+- If `library_mode == copy-locally`: there is no clone tied to the install. Use a scratch clone at `~/A2AL` (or clone there if missing) so e3 has fresh upstream library files to copy from.
 
 ## Re-sync diff loop (Phase 2 step e4 alternate)
 
