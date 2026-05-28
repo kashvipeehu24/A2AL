@@ -2,6 +2,31 @@
 
 Reference skill, slash command, and sample CLAUDE.md for Claude Code. After install, an agent in Claude Code can read and write A2AL/0.4.1 messages (routing header + body shorthand).
 
+## For AI agents — automated install (v0.4.2+)
+
+Two entry points for an AI agent to install A2AL on a host project end-to-end without the operator running each step manually. Both load the same prompt file ([`INSTALL-PROMPT.md`](./INSTALL-PROMPT.md)); pick the one that matches your environment.
+
+### Primary — WebFetch
+
+Operator pastes this into a fresh Claude Code session in the target project:
+
+```
+Fetch and follow this install prompt:
+https://raw.githubusercontent.com/mcornelison/A2AL/main/examples/ClaudeCode/INSTALL-PROMPT.md
+```
+
+The agent fetches the file and follows it. Pulls whatever is currently on `main`.
+
+### Fallback — inline paste
+
+If WebFetch isn't available, the operator copies the full contents of [`INSTALL-PROMPT.md`](./INSTALL-PROMPT.md) from the GitHub UI and pastes the whole file as their first message in the chat. The agent reads it from the message and follows it. Self-contained; no network calls beyond the eventual `git clone`.
+
+### Idempotent re-sync
+
+Re-running the prompt against an already-installed project re-syncs the skill, command, and library files from upstream, then runs a section-by-section diff of the existing CLAUDE.md A2AL block against the current sample. Any drift is surfaced for operator review one subsection at a time; their legitimate placeholder fill-ins (agent identity, paths) are normalized out before diffing. This is the supported upgrade path for all 0.x.x versions.
+
+The manual step-by-step instructions below are still the canonical reference for humans who prefer to do it themselves.
+
 ## Files in this folder
 
 | Path | Purpose |
