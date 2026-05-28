@@ -15,7 +15,26 @@ On re-sync, Phase 1 collapses to a single confirmation question, and Phase 2 ste
 
 ## Phase 1 — Decisions
 
-_(filled in by Tasks 4–5)_
+Run q1 first (detection). It determines whether you ask q2–q5 (fresh) or skip them (re-sync).
+
+### q1 — Detect existing install state (computed, not asked)
+
+Run these probes in order:
+
+1. Read `.claude/skills/a2al/SKILL.md` — if it exists, set `scope = project`.
+2. Otherwise read `~/.claude/skills/a2al/SKILL.md` — if it exists, set `scope = user-global`.
+3. Grep for `^## A2AL/0\.4` in the target CLAUDE.md — if it matches, set `claude_md_has_block = true`. (Target CLAUDE.md is `<project-root>/CLAUDE.md` for project scope, `~/.claude/CLAUDE.md` for user-global scope. If scope is unknown at this point, check the project location first.)
+
+**Decision:**
+- If `scope != none` OR `claude_md_has_block = true` → **re-sync mode**. Skip to "Re-sync condensation" below.
+- Otherwise → **fresh mode**. Continue with q2.
+
+Announce your decision in one line before continuing, e.g.:
+> Detected `.claude/skills/a2al/` — running re-sync.
+
+or
+
+> No existing A2AL install detected — running fresh install.
 
 ## Phase 2 — Execution
 
