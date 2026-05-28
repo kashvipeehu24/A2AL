@@ -36,6 +36,51 @@ or
 
 > No existing A2AL install detected — running fresh install.
 
+### q2 — Identity (fresh only)
+
+Ask the operator:
+> What's this agent's name and role? Examples: `Hawkeye/QA`, `Byte/DEV`, `Ledger/PM`. Roles are free-form — pick whatever describes the agent's job on this project.
+
+Parse their answer into `agent_name` and `agent_role`. Accept both `Name/Role` and `Name(Role)` forms.
+
+### q3 — Peers (fresh only)
+
+Ask the operator:
+> Will this agent receive A2AL messages from peer agents? If yes, give me the absolute path to its inbox directory (e.g., `/Users/x/code/myproj/offices/qa/inbox`). If no, I'll omit the Inbox/outbox subsection from CLAUDE.md.
+
+If they answer "yes" with a path, store `inbox_path`. Otherwise store `inbox_path = none`.
+
+### q4 — Scope (fresh only)
+
+Ask the operator:
+> Project-scoped (`.claude/` in this project) or user-global (`~/.claude/`)?
+
+Store `scope ∈ {project, user-global}`.
+
+### q5 — Library location (fresh only)
+
+Ask the operator:
+> Should the library live (A) inside a cloned A2AL repo I keep at a stable path, or (B) copied into `.claude/a2al-library/` for self-containment? Most installs pick A.
+
+Store `library_mode ∈ {clone-and-point, copy-locally}`.
+
+### Re-sync condensation (re-sync mode only)
+
+If q1 put you in re-sync mode, do NOT run q2–q5. Instead:
+
+1. Read the existing CLAUDE.md target file.
+2. Extract values from its A2AL block:
+   - `agent_name`, `agent_role` from the Identity subsection (the `<Name>/<Role>` token).
+   - `library_path` from the Library location subsection (the first absolute path on the line, ending in `/library/`).
+   - `inbox_path` from the Inbox/outbox subsection's "Your inbox:" bullet (or `none` if subsection absent).
+   - `library_mode`:
+     - If `library_path` is under a directory whose `.git/config` remote URL matches `mcornelison/A2AL` → `clone-and-point`.
+     - If `library_path` ends in `.claude/a2al-library/` (or `~/.claude/a2al-library/`) → `copy-locally`.
+     - Otherwise → ask the operator which mode applies.
+3. Show the operator a summary and ask one confirmation question:
+   > Detected A2AL installed at `<scope>`, identity `<Name>/<Role>` from CLAUDE.md, library at `<path>` (`<library_mode>`). Proceed with re-sync? (yes / change something)
+4. If "change something", offer them q2–q5 selectively for whichever items they want to update. If "yes", proceed directly to Phase 2.
+
 ## Phase 2 — Execution
 
 _(filled in by Tasks 6–9)_
