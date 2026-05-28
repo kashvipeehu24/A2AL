@@ -141,6 +141,47 @@ If you suspect the operator hand-edited either file (you can't actually tell fro
   ```
   Record `library_path = <scope-dir>/a2al-library/` for CLAUDE.md.
 
+### e4 — Write or update CLAUDE.md A2AL block
+
+The target CLAUDE.md depends on scope:
+- `scope == project` → `<project-root>/CLAUDE.md`
+- `scope == user-global` → `~/.claude/CLAUDE.md`
+
+In **re-sync mode**, jump to the "Re-sync diff loop" section below.
+
+In **fresh mode**, handle one of these two cases:
+
+**Case A — Target CLAUDE.md does not exist.**
+
+Copy the full sample to the target:
+```
+cp <clone_path>/examples/ClaudeCode/CLAUDE-sample.md  <target-claude-md-path>
+```
+
+Then fill in placeholders using the answers from q2/q3/q5. The placeholders to substitute are listed in the table below.
+
+**Case B — Target CLAUDE.md exists but has no A2AL block** (i.e., q1 found no `^## A2AL/0\.4` match but a skill or command somewhere on disk was missing too — this is the rare partial state; fresh-mode handles it as a clean insert).
+
+Extract the A2AL block from `<clone_path>/examples/ClaudeCode/CLAUDE-sample.md`:
+1. Find the first H2 line matching `^## A2AL/0\.4\.\d+ — `.
+2. Capture from that line up to (but not including) the next H2 line, or end of file if none.
+
+Find the **first H2** in the target CLAUDE.md (the project-identity heading). Insert the extracted A2AL block immediately after that H2's body but before the next H2. If the target CLAUDE.md has no H2 at all, insert the block at the very top of the file and add a note to the final summary: "no existing H2 found in CLAUDE.md — A2AL block placed at the top; you may want to add a project-identity H2 above it."
+
+**Placeholder substitution table (both cases):**
+
+| Sample placeholder | Substitute with |
+|---|---|
+| `[AgentName]` | `agent_name` from q2 |
+| `[role]` | `agent_role` from q2 |
+| `[/absolute/path/to/A2AL]` (in Library location and Reference subsections) | `dirname(library_path)` if `clone-and-point`, else the literal path inside the scope dir (e.g., `~/.claude/`) — see note below |
+| `[/absolute/path/to/your-inbox/]` | `inbox_path` from q3 |
+| `[Project Name]` (only relevant in Case A) | the host project's name — ask the operator if it's not obvious from the directory name |
+
+Note on library path: the sample has placeholders both for the parent A2AL repo (used in Reference subsection) and for the library directly. In `copy-locally` mode, there is no A2AL clone to point at for the Reference subsection — replace those lines with the GitHub URL fallback documented in `examples/ClaudeCode/README.md` Step 3 ("If you chose Option B and don't have the A2AL repo cloned, replace the spec / validator paths in the Reference subsection with the GitHub URLs").
+
+If `inbox_path == none`, delete the entire `### Inbox / outbox` subsection from the inserted block instead of substituting.
+
 ## Re-sync diff loop (Phase 2 step e4 alternate)
 
 _(filled in by Task 11)_
