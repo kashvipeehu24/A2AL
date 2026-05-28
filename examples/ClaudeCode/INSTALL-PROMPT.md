@@ -182,13 +182,37 @@ Note on library path: the sample has placeholders both for the parent A2AL repo 
 
 If `inbox_path == none`, delete the entire `### Inbox / outbox` subsection from the inserted block instead of substituting.
 
+### e5 — Verify
+
+Run the three smoke-test probes in the same chat session (no restart needed for the agent driving the install; the operator can restart their Claude Code session separately afterwards to pick up the new skill and command for normal use):
+
+1. Read `<library_path>/core.yaml` (or `<clone_path>/library/core.yaml`). Report the entry count (expect ~77) and three sample term names from the file (`done`, `merge`, `PR` are likely to appear; whatever is actually there is fine).
+2. Compose a one-message A2AL test message from `<agent_name>(<agent_role>)` to `Agent2` saying "tests pass; build green; PR ready -- merge?". Show the two-line output (header + body) to the operator.
+3. Confirm `/a2al` is registered (you can describe what the slash command does as a way of showing it's loaded; the operator can confirm by typing `/` in their own session after restarting).
+
+If any probe fails, print the matching troubleshooting row from `examples/ClaudeCode/README.md`:
+- Probe 1 fail → "the library path in CLAUDE.md is wrong, or files weren't copied"
+- Probe 2 fail → "the skill wasn't loaded (check `.claude/skills/a2al/SKILL.md` exists; restart Claude Code)"
+- Probe 3 fail → "the command wasn't loaded (check `.claude/commands/a2al.md` exists; restart Claude Code)"
+
 ## Re-sync diff loop (Phase 2 step e4 alternate)
 
 _(filled in by Task 11)_
 
 ## Verification
 
-_(filled in by Task 9)_
+Verification is Phase 2 step e5 above. After e5 completes successfully, print a summary like:
+
+```
+A2AL install complete.
+  Scope:           <scope>
+  Identity:        <Name>/<Role>
+  Library:         <library_path> (<library_mode>)
+  Skill+command:   <scope-dir>/.claude/
+  CLAUDE.md:       <target-claude-md-path> (block added/updated)
+
+Restart Claude Code to load the new skill and command for normal use.
+```
 
 ## Error handling
 
