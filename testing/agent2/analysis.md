@@ -101,7 +101,7 @@ Confirms the design hypothesis: **shorthand pays off below ~5 structured items; 
 
 ## Postscript — A2AL/0.4.0 pivot (2026-05-07)
 
-The data above motivated a hard pivot. Two days after this analysis was written, A2AL/0.3.0 (JSON envelope) was deprecated and archived to [`archive/0.3.0/`](../../archive/0.3.0/). A2AL/0.4.0 took its place: plain-text shorthand sourced from the open vocabulary library at [`library/`](../../library/).
+The data above motivated a hard pivot. Two days after this analysis was written, A2AL/0.3.0 (JSON envelope) was deprecated and archived to tag [`v0.3.0-archive`](https://github.com/mcornelison/A2AL/tree/v0.3.0-archive/archive/0.3.0). A2AL/0.4.0 took its place: plain-text shorthand sourced from the open vocabulary library at [`library/`](../../library/).
 
 The empirical findings recorded above (A2AL JSON 1.46×–3.55× MD; shorthand 0.26× MD on the welcome handshake) are no longer the basis for a "which format to use" decision rule, because the JSON path no longer exists in the current spec. The shorthand format is just A2AL now.
 

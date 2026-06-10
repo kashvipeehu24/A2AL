@@ -60,7 +60,7 @@ A2AL is NOT for:
 - Long-form deliberation, RCAs, architectural decision records, design specs — these are documents with shelf-life and humans return to them.
 - Transport metadata (timestamps, signatures, routing fabric) — out of scope; A2AL is payload, not transport.
 
-For the historical record, A2AL/0.3.0 used a JSON envelope; that approach was archived after empirical token-cost data showed it cost 1.46×–3.55× more than plain Markdown on real conversational traffic. See [`archive/0.3.0/`](../archive/0.3.0).
+For the historical record, A2AL/0.3.0 used a JSON envelope; that approach was archived after empirical token-cost data showed it cost 1.46×–3.55× more than plain Markdown on real conversational traffic. See tag [`v0.3.0-archive`](https://github.com/mcornelison/A2AL/tree/v0.3.0-archive/archive/0.3.0).
 
 ## 3. Routing Header (normative)
 

@@ -118,7 +118,6 @@ The skill loads `library/core.yaml` automatically. To add domain vocabulary (e.g
 | [`tools/`](./tools) | Validator (`validate_library.py`) + tests |
 | [`.github/`](./.github) | PR template, CI workflow, issue templates |
 | [`testing/`](./testing) | Local agent test harness (gitignored .claude/, tracked test inputs) |
-| [`archive/0.3.0/`](./archive/0.3.0) | Deprecated /0.3.0 JSON envelope spec — historical reference |
 
 Start with [`specs/A2A-Core.md`](./specs/A2A-Core.md) for the style guide and [`library/README.md`](./library/README.md) for the vocabulary structure.
 
@@ -142,7 +141,7 @@ A2AL follows semantic versioning. Adding library entries is a minor bump. Renami
 
 | Version | Theme | Status |
 |---|---|---|
-| 0.3.0 | JSON envelope (deprecated) | archived in [`archive/0.3.0/`](./archive/0.3.0) |
+| 0.3.0 | JSON envelope (deprecated) | archived at tag [`v0.3.0-archive`](https://github.com/mcornelison/A2AL/tree/v0.3.0-archive/archive/0.3.0) |
 | 0.4.0 | Hard pivot — shorthand library is A2AL | superseded by 0.4.1 |
 | **0.4.1** | **Audience rule + routing header (normative)** | **current** |
 | 0.4.2 | Install prompt (idempotent — same flow handles installs and re-syncs) | future |

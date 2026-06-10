@@ -18,4 +18,4 @@ These are not automated. Mike (or another human) runs them as walkthroughs by ca
 | 5. Re-sync, operator edits | Operator hand-edited a subsection; placeholder normalization isolates real drift |
 | 6. Clone collision | `~/A2AL` exists but is not the A2AL repo; prompt asks for an alternate clone path |
 
-Reference design: [`../../docs/superpowers/specs/2026-05-21-a2al-0.4.2-install-prompt-design.md`](../../docs/superpowers/specs/2026-05-21-a2al-0.4.2-install-prompt-design.md).
+Reference design: [`../../docs/design/specs/2026-05-21-a2al-0.4.2-install-prompt-design.md`](../../docs/design/specs/2026-05-21-a2al-0.4.2-install-prompt-design.md).

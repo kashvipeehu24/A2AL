@@ -26,4 +26,4 @@ See [`./ClaudeCode/`](./ClaudeCode/) for the Claude Code skill (`a2al`) and slas
 
 ## Historical examples
 
-For the deprecated /0.3.0 JSON envelope examples (project-coord, social-post profiles, Markdown-to-A2AL transpilation), see [`../archive/0.3.0/examples/`](../archive/0.3.0/examples).
+For the deprecated /0.3.0 JSON envelope examples (project-coord, social-post profiles, Markdown-to-A2AL transpilation), see tag [`v0.3.0-archive`](https://github.com/mcornelison/A2AL/tree/v0.3.0-archive/archive/0.3.0/examples).

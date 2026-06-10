@@ -12,6 +12,12 @@ Thumbs.db
 .claude/
 CLAUDE.md
 
+# Archived spec — removed from the working tree; preserved at tag v0.3.0-archive
+archive/
+
+# Top-level scratch inbox (root only; testing/agent*/inbox/ stays tracked)
+/inbox/
+
 # Build / scratch
 dist/
 build/

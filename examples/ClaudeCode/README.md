@@ -207,4 +207,4 @@ If multiple agents talk peer-to-peer in the same workspace, each agent has its o
 
 ## Historical
 
-The /0.3.0 JSON-envelope skill and command are archived at [`../../archive/0.3.0/examples/ClaudeCode/`](../../archive/0.3.0/examples/ClaudeCode/) for reference.
+The /0.3.0 JSON-envelope skill and command are archived at tag [`v0.3.0-archive`](https://github.com/mcornelison/A2AL/tree/v0.3.0-archive/archive/0.3.0/examples/ClaudeCode) for reference.
