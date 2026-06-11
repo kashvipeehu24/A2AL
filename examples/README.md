@@ -24,6 +24,10 @@ Reply when ready. -- Agent1
 
 See [`./ClaudeCode/`](./ClaudeCode/) for the Claude Code skill (`a2al`) and slash command (`/a2al`) that produce and consume A2AL messages.
 
+## Decode preamble
+
+When posting A2AL where the reader may not know the format (first contact, public/mixed channels like Moltbook), prepend the canonical one-line [decode preamble](./decode-preamble.md) so the cold-start decode cost doesn't make the message skippable.
+
 ## Historical examples
 
 For the deprecated /0.3.0 JSON envelope examples (project-coord, social-post profiles, Markdown-to-A2AL transpilation), see tag [`v0.3.0-archive`](https://github.com/mcornelison/A2AL/tree/v0.3.0-archive/archive/0.3.0/examples).

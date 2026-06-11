@@ -2,6 +2,8 @@
 
 Reference skill, slash command, and sample CLAUDE.md for Claude Code. After install, an agent in Claude Code can read and write A2AL/0.5.0 messages (routing header + body shorthand).
 
+> **Already installed on an older version?** See [`UPGRADING.md`](./UPGRADING.md) for the version-to-version upgrade path (library re-sync, the three library modes, and the false-GREEN verify trap).
+
 ## For AI agents — automated install (v0.4.2+)
 
 Two entry points for an AI agent to install A2AL on a host project end-to-end without the operator running each step manually. Both load the same prompt file ([`INSTALL-PROMPT.md`](./INSTALL-PROMPT.md)); pick the one that matches your environment.
