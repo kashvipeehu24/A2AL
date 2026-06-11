@@ -1,4 +1,4 @@
-# A2AL Install Prompt (v0.4.2)
+# A2AL Install Prompt (targets A2AL/0.5.0)
 
 You are an AI agent that has been asked to install or re-sync A2AL on a host project. Follow this prompt end-to-end. It works for both fresh installs and re-syncs — re-running it is safe and is the supported upgrade path inside 0.x.x.
 
@@ -21,7 +21,8 @@ Run these probes in order:
 
 1. Read `.claude/skills/a2al/SKILL.md` — if it exists, set `scope = project`.
 2. Otherwise read `~/.claude/skills/a2al/SKILL.md` — if it exists, set `scope = user-global`.
-3. Grep for `^## A2AL/0\.4` in the target CLAUDE.md — if it matches, set `claude_md_has_block = true`. (Target CLAUDE.md is `<project-root>/CLAUDE.md` for project scope, `~/.claude/CLAUDE.md` for user-global scope. If scope is unknown at this point, check the project location first.)
+3. Grep for `^## A2AL/\d+\.\d+` (any version — `0.4.x`, `0.5.x`, …; do NOT hardcode a version) in the target CLAUDE.md — if it matches, set `claude_md_has_block = true`. (Target CLAUDE.md is `<project-root>/CLAUDE.md` for project scope, `~/.claude/CLAUDE.md` for user-global scope. If scope is unknown at this point, check the project location first.)
+4. Set `claude_md_blockless = (scope != none AND claude_md_has_block == false)`. This is a real, supported state: the agent has the skill but uses a free-form A2AL rule instead of the standard CLAUDE.md block. Re-sync condensation has a fallback for it.
 
 **Decision:**
 - If `scope != none` OR `claude_md_has_block = true` → **re-sync mode**. Skip to "Re-sync condensation" below.
@@ -58,9 +59,9 @@ Store `scope ∈ {project, user-global}`.
 ### q5 — Library location (fresh only)
 
 Ask the operator:
-> Should the library live (A) inside a cloned A2AL repo I keep at a stable path, or (B) copied into `.claude/a2al-library/` for self-containment? Most installs pick A.
+> Where should the vocabulary library live? (A) inside a cloned A2AL repo I keep at a stable path; (B) copied into `.claude/a2al-library/` for self-containment; (C) a shared project-relative dir outside `.claude/` (e.g. `offices/library/`) that several agents load. Most single-agent installs pick A.
 
-Store `library_mode ∈ {clone-and-point, copy-locally}`.
+Store `library_mode ∈ {clone-and-point, copy-locally, shared-vendored}`. For `shared-vendored`, also store `library_path` (the shared dir); treat it as possibly loaded by multiple agents.
 
 ### Re-sync condensation (re-sync mode only)
 
@@ -74,9 +75,16 @@ If q1 put you in re-sync mode, do NOT run q2–q5. Instead:
    - `library_mode`:
      - If `library_path` is under a directory whose `.git/config` remote URL matches `mcornelison/A2AL` → `clone-and-point`.
      - If `library_path` ends in `.claude/a2al-library/` (or `~/.claude/a2al-library/`) → `copy-locally`.
+     - If `library_path` is a project-relative dir **outside** `.claude/` and is **not** an A2AL clone (no matching git remote) → `shared-vendored`. Assume it may be loaded by multiple agents.
      - Otherwise → ask the operator which mode applies.
+
+   **Blockless fallback** (`claude_md_blockless == true` from q1 — skill present, no standard `## A2AL` block, so there is nothing to read these values from):
+   - `library_path`: scan the target CLAUDE.md (and, for an office layout, the project root CLAUDE.md / AGENT.md) for a free-form pointer such as ``library is `<path>` `` or ``library at `<path>` ``. If found, use it. Else probe, in order: `<project-root>/offices/library/`, `<scope-dir>/a2al-library/`, `<clone_path>/library/`; use the first that exists and contains `core.yaml`. If none, ask the operator for the library path.
+   - `agent_name`/`agent_role`: from the free-form identity rule if present, else ask.
+   - `inbox_path`: from a free-form inbox pointer if present, else `none`.
+   - Then set `library_mode` by applying the rules above to the resolved `library_path`.
 3. Show the operator a summary and ask one confirmation question:
-   > Detected A2AL installed at `<scope>`, identity `<Name>/<Role>` from CLAUDE.md, library at `<path>` (`<library_mode>`). Proceed with re-sync? (yes / change something)
+   > Detected A2AL installed at `<scope>`, identity `<Name>/<Role>`, library at `<path>` (`<library_mode>`). Proceed with re-sync? (yes / change something)
 4. If "change something", offer them q2–q5 selectively for whichever items they want to update. If "yes", proceed directly to Phase 2.
 
 ## Phase 2 — Execution
@@ -106,7 +114,7 @@ By the end of e1, you have `clone_path` (defaulting to `~/A2AL`) pointing at an 
 
 - Read `library_path` from Phase 1.
 - If `library_mode == clone-and-point`: the clone is at `dirname(dirname(library_path))`. Run `git -C <clone-path> pull --ff-only`. Warn but continue on failure.
-- If `library_mode == copy-locally`: there is no clone tied to the install. Use a scratch clone at `~/A2AL` (or clone there if missing) so e3 has fresh upstream library files to copy from.
+- If `library_mode == copy-locally` or `shared-vendored`: there is no clone tied to the install. Use a scratch clone at `~/A2AL` (or clone there if missing) so e3 has fresh upstream library files to copy from. For `shared-vendored`, `library_path` is the shared dir to copy *into* (resolved in Phase 1).
 
 ### e2 — Copy skill + command into chosen scope
 
@@ -139,6 +147,12 @@ If you suspect the operator hand-edited either file (you can't actually tell fro
   ```
   Record `library_path = <scope-dir>/a2al-library/` for CLAUDE.md.
 
+- If `library_mode == shared-vendored`: copy every `.yaml` file from `<clone_path>/library/` into the shared `library_path` (resolved in Phase 1, e.g. `offices/library/`), overwriting unconditionally. Copy **all** files including any new domain (a release may add one, e.g. `azure.yaml`) — never copy only `core.yaml`, or consumers get a half-upgraded library.
+  ```
+  cp <clone_path>/library/*.yaml <library_path>/
+  ```
+  This refreshes the vocabulary for **every** agent that loads `<library_path>`, not just this one — surface that in the e5 / final summary. Keep `library_path` as recorded.
+
 ### e4 — Write or update CLAUDE.md A2AL block
 
 The target CLAUDE.md depends on scope:
@@ -158,10 +172,10 @@ cp <clone_path>/examples/ClaudeCode/CLAUDE-sample.md  <target-claude-md-path>
 
 Then fill in placeholders using the answers from q2/q3/q5. The placeholders to substitute are listed in the table below.
 
-**Case B — Target CLAUDE.md exists but has no A2AL block** (i.e., q1 found no `^## A2AL/0\.4` match but a skill or command somewhere on disk was missing too — this is the rare partial state; fresh-mode handles it as a clean insert).
+**Case B — Target CLAUDE.md exists but has no A2AL block** (i.e., q1 found no `^## A2AL/\d+\.\d+` match but a skill or command somewhere on disk was missing too — this is the rare partial state; fresh-mode handles it as a clean insert).
 
 Extract the A2AL block from `<clone_path>/examples/ClaudeCode/CLAUDE-sample.md`:
-1. Find the first H2 line matching `^## A2AL/0\.4\.\d+ — `.
+1. Find the first H2 line matching `^## A2AL/\d+\.\d+ — ` (any version).
 2. Capture from that line up to (but not including) the next H2 line, or end of file if none.
 
 Find the **first H2** in the target CLAUDE.md (the project-identity heading). Insert the extracted A2AL block immediately after that H2's body but before the next H2. If the target CLAUDE.md has no H2 at all, insert the block at the very top of the file and add a note to the final summary: "no existing H2 found in CLAUDE.md — A2AL block placed at the top; you may want to add a project-identity H2 above it."
@@ -182,14 +196,20 @@ If `inbox_path == none`, delete the entire `### Inbox / outbox` subsection from 
 
 ### e5 — Verify
 
-Run the three smoke-test probes in the same chat session (no restart needed for the agent driving the install; the operator can restart their Claude Code session separately afterwards to pick up the new skill and command for normal use):
+Run the smoke-test probes in the same chat session (no restart needed for the agent driving the install; the operator restarts their own Claude Code session afterwards to pick up the new skill and command for normal use):
 
-1. Read `<library_path>/core.yaml` (or `<clone_path>/library/core.yaml`). Report the entry count (expect ~77) and three sample term names from the file (`done`, `merge`, `PR` are likely to appear; whatever is actually there is fine).
-2. Compose a one-message A2AL test message from `<agent_name>(<agent_role>)` to `Agent2` saying "tests pass; build green; PR ready -- merge?". Show the two-line output (header + body) to the operator.
-3. Confirm `/a2al` is registered (you can describe what the slash command does as a way of showing it's loaded; the operator can confirm by typing `/` in their own session after restarting).
+1. **Verify the library the agent ACTUALLY LOADS — never the clone.** Read `core.yaml` at the recorded `library_path` (the path written into CLAUDE.md), NOT `<clone_path>/library/`. In `copy-locally` and `shared-vendored` modes these are different directories, and reading the clone here is the classic **false-GREEN** failure: it reports the fresh upstream count while the loaded library is stale, greenlighting a broken install.
+   - Report the loaded `core.yaml` entry count and the loaded full-library count.
+   - **Assert loaded == upstream.** Count the just-pulled `<clone_path>/library/core.yaml` and full `<clone_path>/library/*.yaml` (do NOT hardcode expected numbers — read them from the upstream you just pulled; at 0.5.0 they happen to be 87 core / 149 total, or 127/6 if `azure.yaml` was intentionally skipped). Assert the loaded counts equal upstream (modulo intentionally-skipped domains).
+   - **Staleness gate — fail LOUD.** If loaded `core.yaml` count `<` upstream `core.yaml` count, the re-sync did not reach the loaded copy. STOP and print:
+     > BROKEN INSTALL: skill + heading say `<new-version>` but the loaded library at `<library_path>` has `<loaded-count>` core entries vs upstream's `<upstream-count>`. The library you load was NOT refreshed. Re-run e3 against `<library_path>` (usually a `shared-vendored` or `copy-locally` dir the copy missed).
+
+     Do NOT print "install/upgrade complete" while this mismatch holds.
+2. Compose a one-message A2AL test from `<agent_name>(<agent_role>)` to `Agent2` saying "tests pass; build green; PR ready -- merge?". Show the two-line output (header + body) to the operator.
+3. Confirm `/a2al` is registered (describe what the slash command does; the operator confirms by typing `/` after restarting).
 
 If any probe fails, print the matching troubleshooting row from `examples/ClaudeCode/README.md`:
-- Probe 1 fail → "the library path in CLAUDE.md is wrong, or files weren't copied"
+- Probe 1 fail / staleness gate → "the loaded library at the CLAUDE.md `library_path` is stale or wasn't copied — re-run e3 against the loaded path, not the clone"
 - Probe 2 fail → "the skill wasn't loaded (check `.claude/skills/a2al/SKILL.md` exists; restart Claude Code)"
 - Probe 3 fail → "the command wasn't loaded (check `.claude/commands/a2al.md` exists; restart Claude Code)"
 
@@ -297,16 +317,19 @@ Verification is Phase 2 step e5 above. After e5 completes successfully, print a 
 A2AL install complete.
   Scope:           <scope>
   Identity:        <Name>/<Role>
-  Library:         <library_path> (<library_mode>)
+  Library:         <library_path> (<library_mode>) — <loaded-count> entries, verified == upstream
   Skill+command:   <scope-dir>/.claude/
   CLAUDE.md:       <target-claude-md-path> (block added/updated)
 
 Restart Claude Code to load the new skill and command for normal use.
 ```
 
+If `library_mode == shared-vendored`, add:
+> Note: `<library_path>` is shared — this single re-sync upgraded the vocabulary for **every** agent that loads it, not just this one. Don't treat the per-agent skill bump as the whole job; the shared library was the real work.
+
 ## Error handling
 
-Six failure modes have defined behavior. Anything outside these is unexpected — surface the actual error to the operator and stop.
+Seven failure modes have defined behavior. Anything outside these is unexpected — surface the actual error to the operator and stop.
 
 | # | Failure | What you do |
 |---|---|---|
@@ -316,6 +339,7 @@ Six failure modes have defined behavior. Anything outside these is unexpected �
 | 4 | Target CLAUDE.md exists but has no H2 sections at all (fresh-mode Case B) | Insert the A2AL block at the very top of the file. Add this line to the final summary: "no existing H2 found in CLAUDE.md — A2AL block placed at the top; you may want to add a project-identity H2 above it." |
 | 5 | Diff loop — operator picks "Merge manually" then disconnects without finishing | Do not write anything for that subsection. The next run of the install will re-fire the diff for any subsection still drifted (file-state-driven idempotency). |
 | 6 | e5 verification step fails one of the three probes | Print the matching troubleshooting row from `examples/ClaudeCode/README.md`. Do not roll back; partial installs are recoverable by re-running. |
+| 7 | e5 staleness gate: loaded library count `<` upstream count | STOP. The loaded library was not refreshed (usually a `shared-vendored`/`copy-locally` dir the e3 copy missed, or a verify that read the clone instead of `library_path`). Re-run e3 targeting the loaded `library_path`. Never print "complete" until loaded == upstream. This is the false-GREEN guard. |
 
 ### What does NOT have automatic recovery
 
